@@ -3,10 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Winston
+Classtime
 =======
 
 Build a university schedule that fits your life in less than five minutes
+
+This is the backend. The official frontend lives at `ahoskins/winston <https://github.com/ahoskins/winston>`__.
 
 Documentation:
 

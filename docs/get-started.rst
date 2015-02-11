@@ -5,29 +5,28 @@ Get started
 Purpose
 ~~~~~~~
 
-The purpose of this web app is to give students at the University of Alberta more flexibility, more options, and more freedom in choosing their timetable each semester.
+This is a REST API which enables rich web applications based on University of Alberta course data.
+
+The goal is to give students at the University of Alberta more flexibility, more options, and more freedom in choosing their timetable each semester.
+
+This API enables the following functionality.
 
 - Students are able to
-    * browse available courses
+    * browse available courses from any term
     * find out more about each course
     * block off times in the week for sleeping, for work, for seeing friends, etc
     * pick courses
+    * pick electives
     * browse matching timetables
-- The site
-    * has a simple interface with a small number of core features
-    * loads quickly, behaves smoothly
-    * keeps the user in the loop during loading, connection, creation, etc
+
+The official frontend lives at `ahoskins/winston <https://github.com/ahoskins/winston>`__.
 
 Get set up
 ~~~~~~~~~~
 
-Get `pip <https://pip.readthedocs.org/en/latest/>`__, for backend dependencies ::
+Get `pip <https://pip.readthedocs.org/en/latest/>`__, for installing dependencies. On Ubuntu, do ::
 
  $ sudo apt-get install pip
-
-Get `bower <http://bower.io/>`__, for frontend dependencies. You will need `node and npm <http://nodejs.org/download/>`__ first. ::
-
- $ npm install -g bower
 
 Clone the source ::
 
@@ -37,7 +36,6 @@ Clone the source ::
 Install dependencies ::
 
  $ sudo pip install -r requirements.txt
- $ bower install
 
 Check it out
 ~~~~~~~~~~~~
@@ -45,10 +43,6 @@ Check it out
 Run the server ::
 
  $ python runserver.py
-
-View ::
-
- http://localhost:5000
 
 Send a request to the API ::
 

@@ -4,8 +4,8 @@ from __future__ import absolute_import
 import os
 import json
 
-import classtime.remote_db as remote_db
-from classtime.institutions import CONFIG_FOLDER_PATH as institution_config_path
+import classtime.brain.remote_db as remote_db
+from classtime.brain.institutions import CONFIG_FOLDER_PATH as institution_config_path
 
 class TestRemoteLDAPDatabase(object): # pylint: disable=R0904
     @classmethod

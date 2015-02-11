@@ -1,14 +1,15 @@
 
 import os
 import json
+from flask import Flask, request, Response
+from flask import render_template, send_from_directory, url_for
 
-from angular_flask.logging import logging
-logging = logging.getLogger(__name__) # pylint: disable=C0103
+app = Flask(__name__)
 
-from angular_flask.core import db
-from angular_flask.models import Institution
+app.config.from_object('classtime.settings')
 
-from .academic_calendar import AcademicCalendar
+app.url_map.strict_slashes = False
 
-def get_calendar(institution):
-    return AcademicCalendar(institution)
+import classtime.core
+import classtime.models
+import classtime.controllers

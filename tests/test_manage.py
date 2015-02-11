@@ -27,14 +27,14 @@ class TestManageDatabase(unittest.TestCase): # pylint: disable=R0904
         assert_valid_courses()
 
 def assert_valid_terms():
-    import angular_flask.models as models
+    import classtime.models as models
     for term_model in models.Term.query.all():
         assert term_model.term is not None
         assert term_model.termTitle is not None
         assert term_model.courses is not None
 
 def assert_valid_courses():
-    import angular_flask.models as models
+    import classtime.models as models
     for course_model in models.Course.query.all():
         assert course_model.term is not None
         assert course_model.course is not None

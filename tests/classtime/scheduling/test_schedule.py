@@ -1,7 +1,7 @@
 
 import unittest
 
-from classtime.scheduling import Schedule
+from classtime.brain.scheduling import Schedule
 
 class TestSchedule(unittest.TestCase): #pylint: disable=R0904
     @classmethod

@@ -1,11 +1,47 @@
-Find a university schedule that fits your life in less than 5 minutes
+> Find a university schedule that fits your life in less than 5 minutes
 
-![pick some courses](https://cloud.githubusercontent.com/assets/1522678/5492679/bbaec766-86a0-11e4-85ad-ef605e7fed47.png)
+classtime is a REST API which exposes University of Alberta course data to enable rich web applications. It is well documented, well tested, and actively maintained.
 
-![find a schedule](https://cloud.githubusercontent.com/assets/1522678/5492696/e549fca8-86a0-11e4-8069-d4c7785cf950.png)
+It aims to allow more flexibility, more options, and more freedom in choosing a timetable each semester.
 
-Developer Documentation
--------------
+The official frontend is by [Andrew Hoskins](https://github.com/ahoskins) at [ahoskins/winston](https://github.com/ahoskins/winston). 
+
+Maintainer: [Ross Anderson](https://github.com/rosshamish)
+
+API Examples
+------------
+
+Once this repo is open-sourced, API examples will be hosted on readthedocs. Until then, build the docs locally to view API examples (instructions below).
+
+Contributing
+------------
+
+Commit messages loosely follow the [Angular.js commit message style guide][commit-style-guide].  The purpose is to sprinkle about 10 characters of background information into the front of each commit message.
+
+For the most part, commit messages are written in the present tense - the message tells others what the commit will **do** if they merge it into their branch.
+
+Template
+
+	type(context): change X to Y from Z
+
+Good
+
+	a4kd93 feat(schedule-generation): add electives support to the API  
+	bd8663 docs(api): document new electives support  
+	9d9f77 tests(schedule-generation): add tests to verify sane scheduling of electives
+
+Not good
+
+	a4kd93 api has electives now  
+	bd8663 documented electives feature  
+	9d9f77 hopefully electives work, tests are in now
+
+Github issues are used for discussion, questions, and task tracking. Don't worry about assigning labels.
+
+[commit-style-guide]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit?pli=1
+
+Building the docs
+-----------------
 
 Documentation follows [reStructuredText] syntax, looks great when built with [sphinx], and is best viewed in a browser like [firefox] or [chrome].
 

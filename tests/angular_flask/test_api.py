@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 import json
 
-from angular_flask import app
+from classtime import app
 
 class TestAPI(object):
 
