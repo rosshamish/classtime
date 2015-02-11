@@ -1,6 +1,10 @@
 
-DEBUG = True
-SECRET_KEY = 'temporary_secret_key' # make sure to change this
+import os
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/classtime.db'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'debug')
+if SECRET_KEY == 'debug':
+    DEBUG = True
+else:
+    DEBUG = False
 
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:////tmp/classtime.db')

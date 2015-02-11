@@ -2,40 +2,40 @@
 from classtime.core import db
 
 class Section(db.Model):
-    institution = db.Column(db.String(30))
-    term = db.Column(db.String(4))
-    course = db.Column(db.String(6), db.ForeignKey('course.course'))
-    class_ = db.Column(db.String(5), primary_key=True, unique=True)
-    section = db.Column(db.String(10))
-    component = db.Column(db.String(10))
-    classType = db.Column(db.String(1))
-    classStatus = db.Column(db.String(1))
-    enrollStatus = db.Column(db.String(1))
+    institution = db.Column(db.Text)
+    term = db.Column(db.Text)
+    course = db.Column(db.Text, db.ForeignKey('course.course'))
+    class_ = db.Column(db.Text, primary_key=True, unique=True)
+    section = db.Column(db.Text)
+    component = db.Column(db.Text)
+    classType = db.Column(db.Text)
+    classStatus = db.Column(db.Text)
+    enrollStatus = db.Column(db.Text)
     capacity = db.Column(db.Integer)
 
-    session = db.Column(db.String(30))
-    campus = db.Column(db.String(10))
-    autoEnroll = db.Column(db.String(10), db.ForeignKey('section.section'))
+    session = db.Column(db.Text)
+    campus = db.Column(db.Text)
+    autoEnroll = db.Column(db.Text)
     # ("frequently null") classTopic = ...
-    classNotes = db.Column(db.String(80))
+    classNotes = db.Column(db.Text)
     # consent
     # gradingBasis
     # instructionMode
     # classUrl
-    instructorUid = db.Column(db.String(30))
+    instructorUid = db.Column(db.Text)
     # examStatus
     # examDate
     # examStartTime
     # examEndTime
     # examLocation
-    asString = db.Column(db.String(16))
+    asString = db.Column(db.Text)
 
-    day = db.Column(db.String(10))
-    startTime = db.Column(db.String(30))
-    endTime = db.Column(db.String(30))
-    location = db.Column(db.String(30))
+    day = db.Column(db.Text)
+    startTime = db.Column(db.Text)
+    endTime = db.Column(db.Text)
+    location = db.Column(db.Text)
 
-    schedule = db.Column(db.String(30), db.ForeignKey('schedule.hash_id'))
+    schedule = db.Column(db.Text, db.ForeignKey('schedule.hash_id'))
 
     def __init__(self, jsonobj):
         for key, value in jsonobj.items():

@@ -2,11 +2,11 @@
 from classtime.core import db
 
 class Term(db.Model):
-    institution = db.Column(db.String(30))
-    term = db.Column(db.String(4), primary_key=True, unique=True)
-    termTitle = db.Column(db.String(30))
-    startDate = db.Column(db.String(30))
-    endDate = db.Column(db.String(30))
+    institution = db.Column(db.Text)
+    term = db.Column(db.Text, primary_key=True, unique=True)
+    termTitle = db.Column(db.Text)
+    startDate = db.Column(db.Text)
+    endDate = db.Column(db.Text)
 
     courses = db.relationship('Course')
 

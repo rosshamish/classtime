@@ -304,7 +304,8 @@ class AcademicCalendar(object):
                 _report_progress(i, len(objects))
         try:
             self._local_db.commit()
-        except:
+        except Exception as e:
+            logging.error(str(e))
             logging.error("Failed to save <{}> <{}> to local_db".format(
                 self._institution, self.cur_datatype()))
         else:

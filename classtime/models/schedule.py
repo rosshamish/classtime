@@ -15,18 +15,18 @@ def calculate_schedule_hash(section_ids, institution, term):
 # Coordinates many-to-many relationship between schedules and sections
 sections = db.Table('sections',
     db.Column('section_id',
-        db.String(5), db.ForeignKey('section.class_')),
+        db.Text, db.ForeignKey('section.class_')),
     db.Column('schedule_id',
         db.String(SCHEDULE_HASH_LENGTH), db.ForeignKey('schedule.hash_id'))
 )
 
 class Schedule(db.Model):
-    institution = db.Column(db.String(30))
-    term = db.Column(db.String(4), db.ForeignKey('term.term'))
+    institution = db.Column(db.Text)
+    term = db.Column(db.Text, db.ForeignKey('term.term'))
     sections = db.relationship('Section', secondary=sections)
-    hash_id = db.Column(db.String(SCHEDULE_HASH_LENGTH), primary_key=True)
+    hash_id = db.Column(db.String(SCHEDULE_HASH_LENGTH), primary_key=True, unique=True)
 
-    asString = db.Column(db.String(30))
+    asString = db.Column(db.Text)
 
     def __init__(self, jsonobj):
         for key, value in jsonobj.items():

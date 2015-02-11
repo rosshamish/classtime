@@ -18,3 +18,5 @@ def runserver():
 
 if __name__ == '__main__':
     runserver()
+elif os.environ.get('SECRET_KEY'):
+    idly_fill()
