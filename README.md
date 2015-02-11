@@ -1,10 +1,12 @@
 > Find a university schedule that fits your life in less than 5 minutes
 
-classtime is a REST API which exposes University of Alberta course data to enable rich web applications. It is well documented, well tested, and actively maintained.
+classtime offers university course catalog access **and** schedule generation capabilities through a convenient REST API. It is well documented, well tested, and actively maintained.
 
-It aims to allow more flexibility, more options, and more freedom in choosing a timetable each semester.
+It enables frontends which improve the course registration experience of post-secondary students.
 
-The official frontend is by [Andrew Hoskins](https://github.com/ahoskins) at [ahoskins/winston](https://github.com/ahoskins/winston). 
+It currently supports the [University of Alberta](http://ualberta.ca), and is intended to pair nicely with [BearTracks](https://beartracks.ualberta.ca).
+
+The official frontend is maintained by [Andrew Hoskins](https://github.com/ahoskins) at [ahoskins/winston](https://github.com/ahoskins/winston). 
 
 Maintainer: [Ross Anderson](https://github.com/rosshamish)
 
