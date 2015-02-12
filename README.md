@@ -1,58 +1,53 @@
-> Find a university schedule that fits your life in less than 5 minutes
+![](http://i.imgur.com/YS6rK5F.png) classtime
+=========
 
-classtime offers university course catalog access **and** schedule generation capabilities through a convenient REST API. It is well documented, well tested, and actively maintained.
+##### UAlberta course data and schedule generation as a REST API
 
-It enables frontends which improve the course registration experience of post-secondary students.
+<hr />
 
-It currently supports the [University of Alberta](http://ualberta.ca), and is intended to pair nicely with [BearTracks](https://beartracks.ualberta.ca).
+classtime is a platform-agnostic data source for building rich applications for [University of Alberta](https://ualberta.ca) students.
 
-The official frontend is maintained by [Andrew Hoskins](https://github.com/ahoskins) at [ahoskins/winston](https://github.com/ahoskins/winston). 
+It was developed in parallel with [winston](https://github.com/ahoskins/winston), the official frontend.
 
-Maintainer: [Ross Anderson](https://github.com/rosshamish)
+It is [well documented](#docs), [well tested](#tests), and [actively maintained][issue-list].
 
-API Examples
-------------
+There is preliminary support for plugging in other schools, and contributions of that nature are welcome and encouraged. [Open an issue][issue-new] to discuss adding support for your school.
 
-Once this repo is open-sourced, API examples will be hosted on readthedocs. Until then, build the docs locally to view API examples (instructions below).
+> Maintainers: [Ross Anderson](https://github.com/rosshamish), [Andrew Hoskins](https://github.com/ahoskins)
 
-Contributing
-------------
+Get started
+-----------
 
-Commit messages loosely follow the [Angular.js commit message style guide][commit-style-guide].  The purpose is to sprinkle about 10 characters of background information into the front of each commit message.
+Get the code with [git]
+> $ git clone https://github.com/rosshamish/classtime  
+> $ cd classtime
 
-For the most part, commit messages are written in the present tense - the message tells others what the commit will **do** if they merge it into their branch.
+Install dependencies with [pip]
+> $ pip install -r requirements.txt
 
-Template
+Run the server with [python 2][python] (not 3)
+> $ python runserver.py  
+> Server running on http://localhost:5000 ...
 
-	type(context): change X to Y from Z
+Get terms in [chrome] or [firefox]
+> GET http://localhost:5000/api/terms
 
-Good
+Get courses
+> GET http://localhost:5000/api/courses
 
-	a4kd93 feat(schedule-generation): add electives support to the API  
-	bd8663 docs(api): document new electives support  
-	9d9f77 tests(schedule-generation): add tests to verify sane scheduling of electives
+Get schedules
+> GET http://localhost:5000/api/generate-schedules?q={"institution":"ualberta", "courses":["001343","004093"], "term":"1490"}
 
-Not good
+Docs
+----
 
-	a4kd93 api has electives now  
-	bd8663 documented electives feature  
-	9d9f77 hopefully electives work, tests are in now
+Once this repo is open-sourced, the docs will be hosted on readthedocs. Until then, [build the docs locally](#building-the-docs).
 
-Github issues are used for discussion, questions, and task tracking. Don't worry about assigning labels.
+When documentation is unclear, missing, or incorrect, [add an issue][issue-new] to the [docs work queue][milestones].
 
-[commit-style-guide]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit?pli=1
-
-Building the docs
------------------
+### Building the docs
 
 Documentation follows [reStructuredText] syntax, looks great when built with [sphinx], and is best viewed in a browser like [firefox] or [chrome].
-
-Clone the project with [git]
-> $ git clone https://github.com/rosshamish/classtime  
-> $ cd classtime  
-
-Install requirements with [pip]
-> $ pip install -r requirements.txt  
 
 Build with [sphinx]
 > $ cd docs  
@@ -61,16 +56,36 @@ Build with [sphinx]
 View with [firefox], [chrome], or any other browser
 > $ firefox _build/html/index.html &
 
-When documentation is unclear, missing, or incorrect, [add an issue][issue-new] to the [docs work queue][milestones].
-
 [git]: http://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+[python]: https://www.python.org/downloads/
 [pip]: http://stackoverflow.com/questions/17271319/installing-pip-on-mac-os-x
 [firefox]: https://www.mozilla.org/en-US/firefox/new/
 [chrome]: http://www.google.com/chrome/
 [reStructuredText]: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 [sphinx]: http://sphinx-doc.org/
-[issue-new]: https://github.com/RossHamish/classtime/issues/new
-[milestones]: https://github.com/RossHamish/classtime/milestones
+[issue-new]: https://github.com/rosshamish/classtime/issues/new
+[issue-list]: https://github.com/rosshamish/classtime/issues
+[milestones]: https://github.com/rosshamish/classtime/milestones
+
+Tests
+-----
+[Nose][nose] is used for testing.
+
+> $ cd tests  
+> $ nosetests
+
+Testing is discussed in more detail in the [docs](#docs).
+
+[nose]: https://nose.readthedocs.org/en/latest/
+
+Get involved
+------------
+
+Use [Github Issues][issue-list] for discussion, questions, and task tracking. Don't worry about assigning labels.
+
+Commit messages loosely follow the [Angular.js commit message style guide][commit-style-guide].  The purpose is to sprinkle about 10 characters of background information into the front of each commit message.
+
+[commit-style-guide]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit?pli=1
 
 Thanks
 ------
