@@ -9,7 +9,7 @@ classtime is a platform-agnostic data source for building rich applications for 
 
 It was developed in parallel with [winston](https://github.com/ahoskins/winston), the official frontend.
 
-It is [well documented](#docs), [well tested](#tests), and [actively maintained][issue-list].
+It is [well documented](#docs), [well tested](#tests), and [actively maintained][issue-activity].
 
 There is preliminary support for plugging in other schools, and contributions of that nature are welcome and encouraged. [Open an issue][issue-new] to discuss adding support for your school.
 
@@ -65,6 +65,7 @@ View with [firefox], [chrome], or any other browser
 [sphinx]: http://sphinx-doc.org/
 [issue-new]: https://github.com/rosshamish/classtime/issues/new
 [issue-list]: https://github.com/rosshamish/classtime/issues
+[issue-activity]: https://github.com/rosshamish/classtime/issues?q=is%3Aissue+sort%3Aupdated-desc
 [milestones]: https://github.com/rosshamish/classtime/milestones
 
 Tests
