@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Classtime
-=======
+=========
 
 Build a university schedule that fits your life in less than five minutes
 
@@ -22,5 +22,3 @@ Documentation:
    
    tests
    profiling
-
-   contributing
