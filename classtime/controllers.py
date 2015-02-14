@@ -7,7 +7,8 @@ from flask import send_file, make_response, abort
 from classtime import app
 
 # Initializes the Flask-Restless API
-import classtime.api
+import classtime.api.api
+import classtime.api.apiv1
 
 # flask-sqlalchemy database
 from classtime.core import db
