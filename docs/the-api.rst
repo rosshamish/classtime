@@ -23,11 +23,21 @@ Responses are communicated in `JavaScript Object Notation (javascript) <http://j
         "total_pages": <int>
     }
 
-The exception is :ref:`api/courses/\<course> <api-courses>`, which returns a single object (not a list), and no book-keeping items.
+The exception is :ref:`api/v1/courses/\<course> <api-courses>`, which returns a single object (not a list), and no book-keeping items.
 
 It is possible for zero ``<response object>``\ s to be returned.
 
 --------------------------------------
+
+Versioning
+~~~~~~~~~~
+
+Versions should be assumed incompatible with one another. Versions are prefixed with their version number. A maximum of 2 versions will be supported at any one time.
+
+Current versions, with their prefixes.
+
+- v0 ``/api/<endpoint>`` (deprecated)
+- v1 ``/api/v1/<endpoint>``
 
 Pagination
 ~~~~~~~~~~
@@ -38,11 +48,11 @@ Each response includes:
 
 To get the nth page, append ``?page=<n>`` to any endpoint::
 
- GET /api/courses-min?page=2
+ GET /api/v1/courses-min?page=2
 
 If you are using a search query, append the page number with ``&``::
 
- GET /api/courses-min?q=<search_query>&page=2
+ GET /api/v1/courses-min?q=<search_query>&page=2
 
 --------------------------------------
 
@@ -53,17 +63,17 @@ Search queries
 
 Format is::
 
- /api/<endpoint>?q={"filters":[{"name":<attribute_name>,"op":<comparison>,"val":<attribute_value>},{ ... },...]}
+ /api/v1/<endpoint>?q={"filters":[{"name":<attribute_name>,"op":<comparison>,"val":<attribute_value>},{ ... },...]}
 
 Examples:
 
  * Get courses for a certain institution and a certain term::
 
-	 GET /api/courses-min?q={"filters":[{"name":"institution","op":"equals","val":"ualberta"},{"name":"term","op":"equal","val":"1490"}]}
+	 GET /api/v1/courses-min?q={"filters":[{"name":"institution","op":"equals","val":"ualberta"},{"name":"term","op":"equal","val":"1490"}]}
 
  * Get terms for a certain institution::
 
- 	 GET /api/terms?q={"filters":[{"name":"institution","op":"equals","val":"ualberta"}]}
+ 	 GET /api/v1/terms?q={"filters":[{"name":"institution","op":"equals","val":"ualberta"}]}
 
 Available operators `listed here <http://flask-restless.readthedocs.org/en/latest/searchformat.html#operators>`__. As of this writing, they are::
 
@@ -112,7 +122,7 @@ Time format
 
 .. _api-institutions:
 
-api/institutions
+api/v1/institutions
 ~~~~~~~~~~~~~~~~
 
 Retrieve a list of available institutions. Each institution contains all available information.
@@ -122,7 +132,7 @@ Request
 
 ::
 
- GET localhost:5000/api/institutions
+ GET localhost:5000/api/v1/institutions
 
 Response
 ''''''''
@@ -155,7 +165,7 @@ Response
 
 .. _api-terms:
 
-api/terms
+api/v1/terms
 ~~~~~~~~~
 
 Retrieve a list of available terms. Each term contains all available information.
@@ -165,7 +175,7 @@ Request
 
 ::
 
- GET localhost:5000/api/terms
+ GET localhost:5000/api/v1/terms
 
 Response
 ''''''''
@@ -202,19 +212,19 @@ Response
 
 .. _api-courses-min:
 
-api/courses-min
+api/v1/courses-min
 ~~~~~~~~~~~~~~~
 
 Quickly retrieve a hierarchy of available courses.
 
-Each course object contains only essential information. More detailed information about a specific course is retrieved with :ref:`/api/courses <api-courses>`.
+Each course object contains only essential information. More detailed information about a specific course is retrieved with :ref:`/api/v1/courses <api-courses>`.
 
 Request
 '''''''
 
 ::
  
- GET localhost:5000/api/courses-min
+ GET localhost:5000/api/v1/courses-min
 
 Response
 ''''''''
@@ -275,7 +285,7 @@ Response
 
 .. _api-courses:
 
-api/courses/<course>
+api/v1/courses/<course>
 ~~~~~~~~~~~~~~~~~~~~
 
 Retrieve detailed information about a single course.
@@ -285,7 +295,7 @@ Request
 
 ::
 
- GET localhost:5000/api/courses/<course>
+ GET localhost:5000/api/v1/courses/<course>
 
 :course: :ref:`6-digit unique course identifier <6-digit-course-identifier>`
 
@@ -331,7 +341,7 @@ Response
 
 .. _api-generate-schedules:
 
-api/generate-schedules
+api/v1/generate-schedules
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Request
@@ -339,7 +349,7 @@ Request
 
 ::
  
- GET localhost:5000/api/generate-schedules?q=<q>
+ GET localhost:5000/api/v1/generate-schedules?q=<q>
 
 ::
 
@@ -506,12 +516,12 @@ Response
 ---------------------
 
 :schedule-identifier: variable length unique schedule identifier. Details about the schedule
-                      can be obtained by accessing :ref:`api/schedules <api-schedules>` and
+                      can be obtained by accessing :ref:`api/v1/schedules <api-schedules>` and
                       passing in this identifier.
 
 .. _api-schedules:
 
-api/schedules
+api/v1/schedules
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Request
@@ -519,7 +529,7 @@ Request
 
 ::
 
- GET localhost:5000/api/schedules/<schedule-identifier>
+ GET localhost:5000/api/v1/schedules/<schedule-identifier>
 
 :course: :ref:`schedule identifier <api-schedule-identifier>`
 
