@@ -3,7 +3,6 @@
 [![Documentation Status](https://readthedocs.org/projects/classtime/badge/?version=latest)](https://readthedocs.org/projects/classtime/?badge=latest)
 [![Build Status](https://travis-ci.org/rosshamish/classtime.svg)](https://travis-ci.org/rosshamish/classtime)
 
-
 ##### UAlberta course data and schedule generation as a REST API
 
 <hr />
@@ -16,30 +15,21 @@ It is [well documented](#docs), [well tested](#tests), and [actively maintained]
 
 There is preliminary support for plugging in other schools, and contributions of that nature are welcome and encouraged. [Open an issue][issue-new] to discuss adding support for your school.
 
+The current version is hosted at `http://classtime.herokuapp.com/api`
+
 > Maintainers: [Ross Anderson](https://github.com/rosshamish), [Andrew Hoskins](https://github.com/ahoskins)
 
-Get started
------------
+Demo
+----
 
-Get the code with [git]
-> $ git clone https://github.com/rosshamish/classtime  
-> $ cd classtime
+Get terms  
+https://classtime.herokuapp.com/api/v1/terms  
 
-Install dependencies with [pip]
-> $ pip install -r requirements.txt
+Get courses  
+https://classtime.herokuapp.com/api/v1/courses
 
-Run the server with [python 2][python] (not 3)
-> $ python runserver.py  
-> Server running on http://localhost:5000 ...
-
-Get terms in [chrome] or [firefox]
-> GET http://localhost:5000/api/terms
-
-Get courses
-> GET http://localhost:5000/api/courses
-
-Get schedules
-> GET http://localhost:5000/api/generate-schedules?q={"institution":"ualberta", "courses":["001343","004093"], "term":"1490"}
+Get schedules  
+https://classtime.herokuapp.com/api/v1/generate-schedules?q={"institution":"ualberta","courses":["001343","004093"],"term":"1490"}
 
 Docs
 ----
@@ -48,7 +38,7 @@ Documentation is hosted at [classtime.readthedocs.org](http://classtime.readthed
 
 When documentation is unclear, missing, or incorrect, [add an issue][issue-new] to the [docs work queue][milestones].
 
-### Building the docs
+#### Build docs locally
 
 Documentation follows [reStructuredText] syntax, looks great when built with [sphinx], and is best viewed in a browser like [firefox] or [chrome].
 
@@ -76,17 +66,19 @@ Tests
 
 [Nose][nose] is used for testing.
 
+[Travis-ci][travis-ci] is used to test all pushes to master, as well as all pull requests.
+
+#### Run tests locally
+
 > $ cd tests  
 > $ nosetests
-
-[Travis-ci][travis-ci] is used to test all pushes to master, as well as all pull requests.
 
 Testing is discussed in more detail in the [docs](#docs).
 
 [nose]: https://nose.readthedocs.org/en/latest/
 [travis-ci]: https://travis-ci.org/rosshamish/classtime
 
-Get involved
+Contributing
 ------------
 
 Use [Github Issues][issue-list] for discussion, questions, and task tracking. Don't worry about assigning labels.
@@ -94,6 +86,28 @@ Use [Github Issues][issue-list] for discussion, questions, and task tracking. Do
 Commit messages loosely follow the [Angular.js commit message style guide][commit-style-guide].  The purpose is to sprinkle about 10 characters of background information into the front of each commit message.
 
 [commit-style-guide]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit?pli=1
+
+#### Getting started
+
+Get the code with [git]
+> $ git clone https://github.com/rosshamish/classtime  
+> $ cd classtime
+
+Install dependencies with [pip]
+> $ pip install -r requirements.txt
+
+Run the server with [python 2][python] (not 3)
+> $ python runserver.py  
+> Server running on http://localhost:5000 ...
+
+Get terms in [chrome] or [firefox]
+> GET http://localhost:5000/api/v1/terms
+
+Get courses
+> GET http://localhost:5000/api/v1/courses
+
+Get schedules
+> GET http://localhost:5000/api/v1/generate-schedules?q={"institution":"ualberta","courses":["001343","004093"],"term":"1490"}
 
 Thanks
 ------
