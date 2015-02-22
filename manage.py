@@ -38,6 +38,8 @@ def main():
         delete_db()
     elif args.command == 'seed_db':
         seed_db(args)
+    elif args.command == 'create_db':
+        create_db()
     elif args.command == 'refresh_db':
         refresh_db(args)
     else:
