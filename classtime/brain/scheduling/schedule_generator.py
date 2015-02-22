@@ -9,7 +9,7 @@ import classtime
 import heapq
 from classtime.brain.scheduling.schedule import Schedule
 
-CANDIDATE_POOL_SIZE = 128
+CANDIDATE_POOL_SIZE = 64
 """Number of schedules to keep in consideration at any one time"""
 
 WORKERS = 16
@@ -184,6 +184,7 @@ def _add_component(candidates, component, pace, obey_status):
         :returns: the best schedules
         :rtype: list of schedules
         """
+        candidates_to_return = list()
         for candidate in candidates[:]:
             if _is_hopeless(candidate, pace):
                 continue
@@ -194,10 +195,10 @@ def _add_component(candidates, component, pace, obey_status):
                     continue
                 if candidate.conflicts(section):
                     continue
-                _add_candidate(candidates,
+                _add_candidate(candidates_to_return,
                     candidate.clone().add_section(section),
                     heap_size)
-        out_q.put(candidates)
+        out_q.put(candidates_to_return)
         return
 
     out_q = multiprocessing.Queue()
@@ -212,9 +213,8 @@ def _add_component(candidates, component, pace, obey_status):
 
     candidates = list()
     for _ in range(len(procs)):
-        candidates.extend(out_q.get())
-    for _ in range(len(candidates) - CANDIDATE_POOL_SIZE):
-        heapq.heappop(candidates)
+        for candidate in out_q.get():
+            _add_candidate(candidates, candidate, CANDIDATE_POOL_SIZE)
 
     for proc in procs:
         proc.join()
@@ -224,10 +224,12 @@ def _add_component(candidates, component, pace, obey_status):
 def _add_candidate(candidates, candidate, heap_size):
     if heap_size == float('inf'):
         heapq.heappush(candidates, candidate)
-    else:
+    elif len(candidates):
         discard = heapq.heapreplace(candidates, candidate)
         if len(candidates) < heap_size:
             heapq.heappush(candidates, discard)
+    else:
+        heapq.heappush(candidates, candidate)
 
 def _is_hopeless(candidate, sections_chosen):
     return len(candidate.sections) < sections_chosen
