@@ -48,12 +48,12 @@ class AcademicCalendar(object):
             raise
 
     @classmethod
-    def idly_fill(cls, institution):
+    def idly_fill(cls, institution, sleeptime):
         """Launches a new thread which idly fetches and saves
         course data from the given institution
         """
         # pylint: disable=W0212
-        def _idly_download_courses(self, sleeptime):
+        def _idly_download_courses(self, sleeptime=10):
             import time
             if self.doesnt_know_about(datatype='terms'):
                 logging.info('[worker] Fetching all <{}> terms'.format(
@@ -81,7 +81,7 @@ class AcademicCalendar(object):
         if AcademicCalendar.idle_workers.get(institution) is None:
             idle_worker = threading.Thread(
                 target=_idly_download_courses,
-                args=(AcademicCalendar(institution), 10))
+                args=(AcademicCalendar(institution), sleeptime))
             idle_worker.daemon = True
             idle_worker.start()
             AcademicCalendar.idle_workers[institution] = idle_worker
