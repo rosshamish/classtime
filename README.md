@@ -1,5 +1,8 @@
 ![](http://i.imgur.com/YS6rK5F.png) classtime
 =========
+[![Documentation Status](https://readthedocs.org/projects/classtime/badge/?version=latest)](https://readthedocs.org/projects/classtime/?badge=latest)
+[![Build Status](https://travis-ci.org/rosshamish/classtime.svg)](https://travis-ci.org/rosshamish/classtime)
+
 
 ##### UAlberta course data and schedule generation as a REST API
 
