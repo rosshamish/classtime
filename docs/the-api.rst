@@ -69,7 +69,7 @@ Examples:
 
  * Get courses for a certain institution and a certain term::
 
-	 GET /api/v1/courses-min?q={"filters":[{"name":"institution","op":"equals","val":"ualberta"},{"name":"term","op":"equal","val":"1490"}]}
+	 GET /api/v1/courses-min?q={"filters":[{"name":"institution","op":"equals","val":"ualberta"},{"name":"term","op":"equals","val":"1490"}]}
 
  * Get terms for a certain institution::
 
