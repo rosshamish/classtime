@@ -44,7 +44,7 @@ Get schedules
 Docs
 ----
 
-Once this repo is open-sourced, the docs will be hosted on readthedocs. Until then, [build the docs locally](#building-the-docs).
+Documentation is hosted at [classtime.readthedocs.org](http://classtime.readthedocs.org). The docs can also be [built locally](#building-the-docs).
 
 When documentation is unclear, missing, or incorrect, [add an issue][issue-new] to the [docs work queue][milestones].
 
@@ -73,14 +73,18 @@ View with [firefox], [chrome], or any other browser
 
 Tests
 -----
+
 [Nose][nose] is used for testing.
 
 > $ cd tests  
 > $ nosetests
 
+[Travis-ci][travis-ci] is used to test all pushes to master, as well as all pull requests.
+
 Testing is discussed in more detail in the [docs](#docs).
 
 [nose]: https://nose.readthedocs.org/en/latest/
+[travis-ci]: https://travis-ci.org/rosshamish/classtime
 
 Get involved
 ------------
