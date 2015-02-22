@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import json
 
 from classtime import app
+from classtime.core import db
 
 class TestAPI(object):
 
@@ -11,10 +12,11 @@ class TestAPI(object):
     def setup_class(cls):
         app.config['TESTING'] = True
         cls.client = app.test_client()
+        db.create_all()
 
     @classmethod
     def teardown_class(cls):
-        pass
+        db.drop_all()
 
     def setup(self):
         pass
