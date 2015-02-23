@@ -9,7 +9,7 @@
 
 classtime is a platform-agnostic data source for building rich applications for [University of Alberta](https://ualberta.ca) students.
 
-It was developed in parallel with [winston](https://github.com/ahoskins/winston), the official frontend.
+It was developed in parallel with [winston](https://github.com/ahoskins/winston) (**unreleased**), the official frontend.
 
 It is [well documented](#docs), [well tested](#tests), and [actively maintained][issue-activity].
 
