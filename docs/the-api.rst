@@ -241,7 +241,8 @@ Response
                   "courses": [
                          {
                               "course": "000001",
-                              "asString": "ACCTG 300"
+                              "asString": "ACCTG 300",
+                              "courseTitle": "Intermediate Accounting"
                          },
                          { <course object> }
                          ...
@@ -282,6 +283,7 @@ Response
 
 :course: 6-digit course identifier
 :asString: <subject> <level>
+:courseTitle: semantic course name
 
 .. _api-courses:
 

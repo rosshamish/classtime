@@ -48,12 +48,12 @@ class AcademicCalendar(object):
             raise
 
     @classmethod
-    def idly_fill(cls, institution, sleeptime):
+    def idly_fill(cls, institution, sleeptime=10):
         """Launches a new thread which idly fetches and saves
         course data from the given institution
         """
         # pylint: disable=W0212
-        def _idly_download_courses(self, sleeptime=10):
+        def _idly_download_courses(self, sleeptime):
             import time
             if self.doesnt_know_about(datatype='terms'):
                 logging.info('[worker] Fetching all <{}> terms'.format(

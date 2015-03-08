@@ -104,7 +104,8 @@ def courses_min_structured(result=None, search_params=None):
 
         subject_list[-1]['courses'].append({
             'course': course.get('course'),
-            'asString': course.get('asString')
+            'asString': course.get('asString'),
+            'courseTitle': course.get('courseTitle')
         })
     result['objects'] = faculty_list
     return
@@ -117,7 +118,8 @@ api_manager.create_api(Course,
                                         'faculty',
                                         'subject',
                                         'subjectTitle',
-                                        'course'],
+                                        'course',
+                                        'courseTitle'],
                        preprocessors={
                            'GET_MANY': [courses_min_order_faculty_subject]
                        },
