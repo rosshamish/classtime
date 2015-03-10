@@ -54,6 +54,11 @@ If you are using a search query, append the page number with ``&``::
 
  GET /api/v1/courses-min?q=<search_query>&page=2
 
+ Compression
+ ~~~~~~~~~~~
+
+ All responses are compressed with gzip. Your client should handle the gzipping automagically for you. You shouldn't need to worry about this at all.
+
 --------------------------------------
 
 Search queries
