@@ -321,6 +321,10 @@ class ScheduleScorer(object):
         if preferences is None:
             preferences = dict()
 
+        for preference in ['no-marathons', 'day-classes', 'start-early']:
+            if preference not in preferences or preferences[preference] is None:
+                preferences[preference] = 1
+
         self.score_info = {
             'no-marathons': {
                 'weight': preferences.get('no-marathons', 1),
@@ -357,11 +361,13 @@ class ScheduleScorer(object):
         Also calculates 'overall', which is a weighted sum of all
         scoring functions.
         """
+        self.score_values['overall'] = 0
+        if not len(self.schedule.sections):
+            return
         for name in self.score_info.keys():
             self.score_values.update({
                 name: self._weight(name) * self._score(name)
             })
-        self.score_values['overall'] = 0
         self.score_values['overall'] = sum(self.score_values.values())
 
     def _weight(self, name):
