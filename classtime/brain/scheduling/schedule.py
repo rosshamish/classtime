@@ -478,6 +478,9 @@ class ScheduleScorer(object):
         start_blocks = [start_block for start_block in start_blocks
                         if start_block is not None]
 
+        if not len(start_blocks):
+            return 0
+
         avg_start_block = 1.0 * sum(start_blocks) / len(start_blocks)
 
         # decent - actual
