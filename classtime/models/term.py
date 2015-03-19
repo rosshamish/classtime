@@ -2,8 +2,8 @@
 from classtime.core import db
 
 class Term(db.Model):
-    institution = db.Column(db.Text)
-    term = db.Column(db.Text, primary_key=True, unique=True)
+    institution = db.Column(db.Text, primary_key=True)
+    term = db.Column(db.Text, primary_key=True)
     termTitle = db.Column(db.Text)
     startDate = db.Column(db.Text)
     endDate = db.Column(db.Text)

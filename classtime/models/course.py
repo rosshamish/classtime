@@ -2,9 +2,9 @@
 from classtime.core import db
 
 class Course(db.Model):
-    institution = db.Column(db.Text)
-    term = db.Column(db.Text, db.ForeignKey('term.term'))
-    course = db.Column(db.Text, primary_key=True, unique=True)
+    institution = db.Column(db.Text, primary_key=True)
+    term = db.Column(db.Text, primary_key=True)
+    course = db.Column(db.Text, primary_key=True)
     subject = db.Column(db.Text)
     subjectTitle = db.Column(db.Text)
     catalog = db.Column(db.Text)
@@ -19,6 +19,10 @@ class Course(db.Model):
     asString = db.Column(db.Text)
 
     sections = db.relationship('Section')
+
+    __table_args__ = (db.ForeignKeyConstraint(['institution', 'term'],
+                                           ['term.institution', 'term.term']),
+                      {})
 
     def __init__(self, jsonobj):
         for key, value in jsonobj.items():

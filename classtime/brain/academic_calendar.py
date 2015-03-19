@@ -13,7 +13,7 @@ class AcademicCalendar(object):
 
     Internally, uses a stack-based datatype access idiom. Usage::
      self.push_<datatype>()
-     ... use self.cur_datatype() or self.cur_primary_key() ...
+     ... use self.cur_datatype() or self.cur_primary_keys() ...
      self.pop_<datatype>()
 
      where <datatype> is one of [terms, courses, sections, classtimes]
@@ -33,7 +33,7 @@ class AcademicCalendar(object):
         self._institution = institution
         self._term = None
         self._datatype_stack = ['terms']
-        self._primary_key_stack = ['term']
+        self._primary_keys_stack = [ ('term',) ]
 
         try:
             self._remote_db = RemoteDatabaseFactory.build(institution)
@@ -64,15 +64,14 @@ class AcademicCalendar(object):
             terms = [term.term
                      for term in self._local_db.query(datatype='terms').all()]
 
-            terms.append('1490')
             terms.reverse()
             for termid in terms:
                 if force_refresh or self.doesnt_know_about(datatype='courses', term=termid):
-                    msg = '[worker] Fetching courses - <{}> <term={}>'
-                    logging.info(msg.format(institution, termid))
+                    logging.info('[worker] Fetching courses - <{}> <term={}>'.format(institution, termid))
                     courses = self._fetch(datatype='courses', term=termid)
+                    logging.info('[worker] Fetched {} courses'.format(len(courses)))
                     self._save(courses, datatype='courses')
-                    msg = '[worker]...Saved {} courses - <{}> <term={}>'
+                    msg = '[worker]...Saved courses - <{}> <term={}>'
                     logging.info(msg.format(len(courses), institution, termid))
                     for _ in range(sleeptime):
                         time.sleep(1)
@@ -103,8 +102,8 @@ class AcademicCalendar(object):
             terms = self._fetch(datatype='terms')
             self._save(terms, datatype='terms')
 
-        if self.doesnt_know_about(datatype='terms', identifier=termid):
-            logging.critical('Invalid term <{}> at <{}>'.format(
+        if self.doesnt_know_about(datatype='terms', term=termid):
+            logging.critical('Unknown term <{}> at <{}>'.format(
                 termid, self._institution))
         self._term = termid
 
@@ -170,15 +169,16 @@ class AcademicCalendar(object):
             return 'noschedulesections'
         section_ids = [section.get('class')
                        for section in schedule.sections]
-        term = schedule.sections[0].get('term')
         institution = schedule.sections[0].get('institution')
+        term = schedule.sections[0].get('term')
+        course = schedule.sections[0].get('course')
         hash_id = calculate_schedule_hash(section_ids, institution, term)
 
-        if not self._local_db.exists('schedule', hash_id):
+        identifiers = (term, hash_id)
+        if not self._local_db.exists('schedule', identifiers=identifiers):
             schedule_dict = {
-                'institution': institution,
                 'term': term,
-                'sections': [self._local_db.get('section', section_id)
+                'sections': [self._local_db.get('section', identifiers=(term, course, section_id) )
                              for section_id in section_ids],
                 'hash_id': hash_id
             }
@@ -197,7 +197,8 @@ class AcademicCalendar(object):
                                                  section_dict.get('section')])
             return section_dict
 
-        course_info = self._local_db.get(datatype='course', identifier=course) \
+        identifiers = (self._term, course)
+        course_info = self._local_db.get(datatype='course', identifiers=identifiers) \
                                     .to_dict()
         section_query = self._local_db.query(datatype='sections') \
                                       .filter_by(term=self._term, course=course)
@@ -293,13 +294,14 @@ class AcademicCalendar(object):
         logging.debug("Saving some <{}> <{}> to local db".format(
             self._institution, datatype))
         for i, obj in enumerate(objects, start=1):
+            identifiers = tuple(obj.get(pkey) for pkey in self.cur_primary_keys())
             should_add = self.doesnt_know_about(datatype=self.cur_datatype(),
-                identifier=obj.get(self.cur_primary_key()))
+                                                identifiers=identifiers)
             if should_add:
                 self._local_db.add(obj, datatype=self.cur_datatype())
             elif should_update:
                 self._local_db.update(obj, datatype=self.cur_datatype(),
-                    identifier=obj.get(self.cur_primary_key()))
+                                           identifiers=primary_key_values)
             if _should_report_progress(i, len(objects)):
                 _report_progress(i, len(objects))
         try:
@@ -315,14 +317,14 @@ class AcademicCalendar(object):
 
         self.pop_datatype()
 
-    def doesnt_know_about(self, datatype, identifier=None, **kwargs):
+    def doesnt_know_about(self, datatype, identifiers=None, **kwargs):
         retval = not self._local_db.exists(datatype=datatype,
-                                           identifier=identifier,
+                                           identifiers=identifiers,
                                            **kwargs)
         return retval
 
-    def knows_about(self, datatype, identifier=None, **kwargs):
-        return not self.doesnt_know_about(datatype, identifier, **kwargs)
+    def knows_about(self, datatype, identifiers=None, **kwargs):
+        return not self.doesnt_know_about(datatype, identifiers, **kwargs)
 
     def push_datatype(self, datatype):
         """ONLY for use with unknown datatypes coming from an outside source.
@@ -348,35 +350,35 @@ class AcademicCalendar(object):
 
     def pop_datatype(self):
         self._datatype_stack.pop()
-        self._primary_key_stack.pop()
+        self._primary_keys_stack.pop()
 
     def cur_datatype(self):
         return self._datatype_stack[-1]
 
-    def cur_primary_key(self):
-        return self._primary_key_stack[-1]
+    def cur_primary_keys(self):
+        return self._primary_keys_stack[-1]
         
     def push_terms(self):
         self._datatype_stack.append('terms')
-        self._primary_key_stack.append('term')
+        self._primary_keys_stack.append( ('term',) )
         return self
 
     def push_courses(self):
         self._datatype_stack.append('courses')
-        self._primary_key_stack.append('course')
+        self._primary_keys_stack.append( ('term', 'course') )
         return self
 
     def push_sections(self):
         self._datatype_stack.append('sections')
-        self._primary_key_stack.append('class')
+        self._primary_keys_stack.append( ('term', 'course', 'class') )
         return self
 
     def push_status(self):
         self._datatype_stack.append('status')
-        self._primary_key_stack.append('class')
+        self._primary_keys_stack.append( ('term', 'course', 'class') )
         return self
 
     def push_classtimes(self):
         self._datatype_stack.append('classtimes')
-        self._primary_key_stack.append(None)
+        self._primary_keys_stack.append( (None,) )
         return self

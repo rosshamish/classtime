@@ -14,19 +14,26 @@ def calculate_schedule_hash(section_ids, institution, term):
 
 # Coordinates many-to-many relationship between schedules and sections
 sections = db.Table('sections',
-    db.Column('section_id',
-        db.Text, db.ForeignKey('section.class_')),
-    db.Column('schedule_id',
-        db.String(SCHEDULE_HASH_LENGTH), db.ForeignKey('schedule.hash_id'))
+    db.Column('institution', db.Text),
+    db.Column('term', db.Text),
+    db.Column('course', db.Text),
+    db.Column('section_id', db.Text),
+    db.Column('schedule_id', db.String(SCHEDULE_HASH_LENGTH)),
+    db.ForeignKeyConstraint(['institution', 'term', 'course', 'section_id'],
+        ['section.institution', 'section.term', 'section.course', 'section.class_']),
+    db.ForeignKeyConstraint(['institution', 'term', 'schedule_id'],
+        ['schedule.institution', 'schedule.term', 'schedule.hash_id'])
 )
 
 class Schedule(db.Model):
-    institution = db.Column(db.Text)
-    term = db.Column(db.Text, db.ForeignKey('term.term'))
+    institution = db.Column(db.Text, primary_key=True)
+    term = db.Column(db.Text, primary_key=True)
     sections = db.relationship('Section', secondary=sections)
     hash_id = db.Column(db.String(SCHEDULE_HASH_LENGTH), primary_key=True, unique=True)
-
     asString = db.Column(db.Text)
+    __table_args__ = (db.ForeignKeyConstraint(['institution', 'term'],
+                                           ['term.institution', 'term.term']),
+                      {})
 
     def __init__(self, jsonobj):
         for key, value in jsonobj.items():

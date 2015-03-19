@@ -20,7 +20,6 @@ WORKLOAD_SIZE = CANDIDATE_POOL_SIZE / WORKERS
 
 def find_schedules(schedule_params, num_requested):
     """
-    :param AcademicCalendar cal: calendar to pull section data from
     :param dict schedule_params: parameters to build the schedule with.
         Check :ref:`api/generate-schedules <api-generate-schedules>`
         for available parameters.

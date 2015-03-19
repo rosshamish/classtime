@@ -5,15 +5,6 @@ logging = logging.getLogger(__name__) #pylint: disable=C0103
 from classtime.core import db
 from classtime.models import Term, Schedule, Course, Section
 
-MODEL_PRIMARY_KEY_MAP = {
-    Term: 'term',
-    Schedule: 'hash_id',
-    Course: 'course',
-    Section: 'class_'
-}
-def primary_key_from_model(model):
-    return MODEL_PRIMARY_KEY_MAP.get(model, '')
-
 class StandardLocalDatabase(object):
     """A single institution's view of the local database
 
@@ -98,35 +89,32 @@ class StandardLocalDatabase(object):
     def cur_datatype_model(self):
         return self._model_stack[-1]
 
-    def exists(self, datatype, identifier=None, **kwargs):
-        """Checks whether an object exists with the given primary key. 
-        If no primary key is given, checks if *any* object exists.
+    def exists(self, datatype, identifiers=None, **kwargs):
+        """Checks whether an object exists with the given identifiers (primary key values). 
+        If no identifiers are given, checks if *any* object exists.
 
-        :param str primary_key: the primary key to look for.
-            eg for a Term, the primary key would be a 
-            :ref:`4-digit term identifier <4-digit-term-identifier>`
+        Primary keys are specified in each models/*.py definition. Institution must be
+        be omitted. It will be inferred from the institution of this local database instance.
 
-        :returns: whether the object with that primary key exists
+        :returns: whether the object(s) exist(s)
         :rtype: boolean
         """
         if kwargs:
             retval = self.query(datatype) \
                          .filter_by(**kwargs) \
                          .first() is not None
-        elif identifier is None:
+        elif identifiers is None:
             retval = self.query(datatype) \
                          .first() is not None
         else:
-            retval = self.get(datatype, identifier) is not None
+            retval = self.get(datatype, identifiers) is not None
         return retval
 
-    def get(self, datatype, identifier):
+    def get(self, datatype, identifiers):
         self.push_datatype(datatype)
-        
-        filter_dict = {
-            primary_key_from_model(self.cur_datatype_model()): identifier
-        }
-        retval = self.query(datatype).filter_by(**filter_dict).first()
+
+        identifiers = (self._institution,) + identifiers
+        retval = self.cur_datatype_model().query.get(identifiers)
 
         self.pop_datatype()
         return retval
@@ -153,9 +141,9 @@ class StandardLocalDatabase(object):
 
         self.pop_datatype()
 
-    def update(self, model_dict, datatype, identifier):
+    def update(self, model_dict, datatype, identifiers):
         db_obj = self.get(datatype=datatype,
-                          identifier=identifier)
+                          identifiers=identifiers)
         for attr, value in model_dict.iteritems():
             setattr(db_obj, attr, value)
 

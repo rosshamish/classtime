@@ -2,10 +2,10 @@
 from classtime.core import db
 
 class Section(db.Model):
-    institution = db.Column(db.Text)
-    term = db.Column(db.Text)
-    course = db.Column(db.Text, db.ForeignKey('course.course'))
-    class_ = db.Column(db.Text, primary_key=True, unique=True)
+    institution = db.Column(db.Text, primary_key=True)
+    term = db.Column(db.Text, primary_key=True)
+    course = db.Column(db.Text, primary_key=True)
+    class_ = db.Column(db.Text, primary_key=True)
     section = db.Column(db.Text)
     component = db.Column(db.Text)
     classType = db.Column(db.Text)
@@ -35,7 +35,13 @@ class Section(db.Model):
     endTime = db.Column(db.Text)
     location = db.Column(db.Text)
 
-    schedule = db.Column(db.Text, db.ForeignKey('schedule.hash_id'))
+    schedule = db.Column(db.Text)
+
+    __table_args__ = (db.ForeignKeyConstraint(['institution', 'term', 'course'],
+                                              ['course.institution', 'course.term', 'course.course']),
+                      db.ForeignKeyConstraint(['institution', 'term', 'schedule'],
+                                              ['schedule.institution', 'schedule.term', 'schedule.hash_id']),
+                      {})
 
     def __init__(self, jsonobj):
         for key, value in jsonobj.items():
