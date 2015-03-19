@@ -17,4 +17,4 @@ def runserver():
     app.run(port=port)
 
 if __name__ == '__main__':
-    runserver()
+    idly_fill()
