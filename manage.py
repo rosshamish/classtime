@@ -20,7 +20,7 @@ def seed_db(args):
     term = 1490
     if args.term:
         term = args.term
-    brain.get_calendar('ualberta').select_active_term(term)
+    brain.get_calendar('ualberta').select_active_term(term, force_refresh=True)
     logging.info('DB seeded with term {}'.format(term))
 
 def refresh_db(args):

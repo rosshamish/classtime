@@ -8,7 +8,7 @@ def is_main_process():
 def idly_fill():
     from classtime.brain import AcademicCalendar
     for institution in ['ualberta']:
-        AcademicCalendar.idly_fill(institution, 1)
+        AcademicCalendar.idly_fill(institution, sleeptime=2, force_refresh=True)
 
 def runserver():
     if is_main_process():

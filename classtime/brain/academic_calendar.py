@@ -48,12 +48,12 @@ class AcademicCalendar(object):
             raise
 
     @classmethod
-    def idly_fill(cls, institution, sleeptime=10):
+    def idly_fill(cls, institution, sleeptime=10, force_refresh=False):
         """Launches a new thread which idly fetches and saves
         course data from the given institution
         """
         # pylint: disable=W0212
-        def _idly_download_courses(self, sleeptime):
+        def _idly_download_courses(self, sleeptime, force_refresh):
             import time
             if self.doesnt_know_about(datatype='terms'):
                 logging.info('[worker] Fetching all <{}> terms'.format(
@@ -67,7 +67,7 @@ class AcademicCalendar(object):
             terms.append('1490')
             terms.reverse()
             for termid in terms:
-                if self.doesnt_know_about(datatype='courses', term=termid):
+                if force_refresh or self.doesnt_know_about(datatype='courses', term=termid):
                     msg = '[worker] Fetching courses - <{}> <term={}>'
                     logging.info(msg.format(institution, termid))
                     courses = self._fetch(datatype='courses', term=termid)
@@ -81,12 +81,12 @@ class AcademicCalendar(object):
         if AcademicCalendar.idle_workers.get(institution) is None:
             idle_worker = threading.Thread(
                 target=_idly_download_courses,
-                args=(AcademicCalendar(institution), sleeptime))
+                args=(AcademicCalendar(institution), sleeptime, force_refresh))
             idle_worker.daemon = True
             idle_worker.start()
             AcademicCalendar.idle_workers[institution] = idle_worker
 
-    def select_active_term(self, termid):
+    def select_active_term(self, termid, force_refresh=False):
         """Set the calendar to a given term
 
         :param str termid: :ref:`4-digit term identifier
@@ -108,7 +108,7 @@ class AcademicCalendar(object):
                 termid, self._institution))
         self._term = termid
 
-        if self.doesnt_know_about(datatype='courses', term=termid):
+        if force_refresh or self.doesnt_know_about(datatype='courses', term=termid):
             logging.info('Fetching courses, <{}> <term={}>'.format(
                 self._institution, self._term))
             courses = self._fetch(datatype='courses', term=self._term)
