@@ -236,7 +236,7 @@ class Schedule(object):
         """
         daynum = Schedule._daystr_to_daynum(day)
         for block in range(start, end+1):
-            self.timetable_bitmap[daynum] += 1 << (Schedule.NUM_BLOCKS-block-1)
+            self.timetable_bitmap[daynum] |= 1 << (Schedule.NUM_BLOCKS-block-1)
             self.timetable[daynum][block] = section_num
 
     def clone(self):
