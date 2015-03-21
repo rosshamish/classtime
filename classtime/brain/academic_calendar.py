@@ -72,7 +72,7 @@ class AcademicCalendar(object):
                     logging.info('[worker] Fetched {} courses'.format(len(courses)))
                     self._save(courses, datatype='courses')
                     msg = '[worker]...Saved courses - <{}> <term={}>'
-                    logging.info(msg.format(len(courses), institution, termid))
+                    logging.info(msg.format(institution, termid))
                     for _ in range(sleeptime):
                         time.sleep(1)
 
