@@ -1,2 +1,2 @@
-web: gunicorn runserver:app -w 3
+web: newrelic-admin run-program gunicorn runserver:app -w 3
 worker: python idlyfilldatabase.py
