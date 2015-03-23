@@ -398,8 +398,8 @@ See the method ``TestAPI.test_generate_schedules`` in ``tests/angular_flask/test
 :institution: :ref:`unique institution identifier <institution-identifier>`
 :term: :ref:`4-digit unique term identifier <4-digit-term-identifier>`
 :courses: list of :ref:`6-digit unique course identifier <6-digit-course-identifier>`
-:busy-times: list of <busytime> objects
-:electives: (optional) list of one-key dictionaries containing a 'courses' list
+:busy-times: (optional) list of <busytime> objects
+:electives: (optional) list of <electives> objects
 :preferences: (optional) specify the weight of each :ref:`preference <api-preference-identifier>`. There are sensible defaults.
 
 .. _api-busytime-object:
@@ -409,7 +409,16 @@ See the method ``TestAPI.test_generate_schedules`` in ``tests/angular_flask/test
 
 :day: day(s) which are busy. Uses :ref:`day format <day-format>`
 :startTime: time the user starts being busy. Uses :ref:`time format <time-format>`
-:endTime: time the user is not busy anymore. Uses :ref:`time format <time-format>`
+:endTime: time the user is not busy anymore. Uses :ref:`time format <time-format>`. 
+
+.. _api-electives-object:
+
+<electives object>
+------------------
+
+:courses: list of :ref:`course identifiers <6-digit-course-identifier>`
+
+One course from each <electives object>'s ``courses`` list will be present in each schedule.
 
 .. _api-preference-identifier:
 
@@ -449,6 +458,7 @@ There is also:
     - a boolean: ``true`` or ``false``
     - specifies whether the open/closed and active/cancelled status of sections should be respected when scheduling
     - if true, closed or cancelled sections will not be scheduled
+
 
 Response
 ''''''''

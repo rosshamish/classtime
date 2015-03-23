@@ -46,7 +46,7 @@ Run the server ::
 
 Send a request to the API ::
 
- GET http://localhost:5000/api/terms
+ GET http://localhost:5000/api/v1/terms
 
 Troubleshooting
 ~~~~~~~~~~~~~~~

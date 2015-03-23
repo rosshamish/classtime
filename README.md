@@ -15,7 +15,7 @@ It is [well documented](#docs), [well tested](#tests), and [actively maintained]
 
 There is preliminary support for plugging in other schools, and contributions of that nature are welcome and encouraged. [Open an issue][issue-new] to discuss adding support for your school.
 
-The current version is hosted at `http://classtime.herokuapp.com/api/v1`
+The current version is hosted at `http://classtime.herokuapp.com/api/v1`. Check out the [demo](#demo).
 
 > Maintainers: [Ross Anderson](https://github.com/rosshamish), [Andrew Hoskins](https://github.com/ahoskins)
 
