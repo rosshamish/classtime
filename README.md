@@ -9,13 +9,13 @@
 
 classtime is a platform-agnostic data source for building rich applications for [University of Alberta](https://ualberta.ca) students.
 
-It was developed in parallel with [winston](https://github.com/ahoskins/winston) (**unreleased**), the official frontend.
+It was developed in parallel with [winston](https://github.com/ahoskins/winston), http://heywinston.com, the official frontend.
 
 It is [well documented](#docs), [well tested](#tests), and [actively maintained][issue-activity].
 
 There is preliminary support for plugging in other schools, and contributions of that nature are welcome and encouraged. [Open an issue][issue-new] to discuss adding support for your school.
 
-The current version is hosted at `http://classtime.herokuapp.com/api`
+The current version is hosted at `http://classtime.herokuapp.com/api/v1`
 
 > Maintainers: [Ross Anderson](https://github.com/rosshamish), [Andrew Hoskins](https://github.com/ahoskins)
 
