@@ -196,6 +196,10 @@ class Schedule(object):
             xordiff = other.timetable_bitmap[day] ^ self.timetable_bitmap[day]
             # each real block difference produces two 1's in the xordiff
             _difference += bin(xordiff).count('1') / 2.0
+        if not _scheduled_blocks:
+            _other_scheduled_blocks = sum([bin(day).count('1')
+                                          for day in other.timetable_bitmap])
+            return _other_scheduled_blocks # guard against div by zero
         return 1.0 * _difference / _scheduled_blocks
 
     def num_similar_schedules(self):
@@ -412,6 +416,8 @@ class ScheduleScorer(object):
                     session_lengths += session_length
                     num_sessions += 1
                     session_length = 0
+            if not num_sessions:
+                num_session = 1 # guard against div by zero
             return (1.0 * session_lengths) / num_sessions
         _decent_sum_of_longest = 2 * 3 * 5 # 2block/hr, 3 hours, 5 days
         def longest_session(day_bitmap):
@@ -479,7 +485,7 @@ class ScheduleScorer(object):
                         if start_block is not None]
 
         if not len(start_blocks):
-            return 0
+            return 0 # guard against div by zero
 
         avg_start_block = 1.0 * sum(start_blocks) / len(start_blocks)
 
