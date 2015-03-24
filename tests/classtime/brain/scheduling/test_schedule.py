@@ -258,6 +258,10 @@ class TestSchedule(unittest.TestCase): #pylint: disable=R0904
             assert_conflict_recognition(scenario.get('sections'),
                 scenario.get('expected'))
 
+    def test_comparison_called_but_no_courses(self):
+        sched = Schedule(sections=[], preferences={'no-marathons': 1})
+        sched.is_similar(Schedule())
+
 def test_preferences_null_values():
     sched = Schedule(preferences={ 'no-marathons': None })
     sched.overall_score() # should not raise an exception
