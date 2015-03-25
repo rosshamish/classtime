@@ -32,11 +32,11 @@ class TestAPI(object):
         return json.loads(self.client.get(endpoint).data)
 
     def test_institutions(self):
-        response = self.get('/api/institutions')
+        response = self.get('/api/v1/institutions')
         assert_valid_response(response)
 
     def test_terms(self):
-        response = self.get('/api/terms')
+        response = self.get('/api/v1/terms')
         assert_valid_response(response)
 
     def test_terms_with_query(self):
@@ -55,7 +55,7 @@ class TestAPI(object):
         assert_valid_response(response)
 
     def test_courses(self):
-        response = self.get('/api/courses')
+        response = self.get('/api/v1/courses')
         assert_valid_response(response)
 
     def test_courses_with_query(self):
@@ -80,7 +80,7 @@ class TestAPI(object):
         assert_valid_response(response)
 
     def test_courses_min(self):
-        response = self.get('/api/courses-min')
+        response = self.get('/api/v1/courses-min')
         assert_valid_response(response)
 
     def test_courses_min_with_query(self):
@@ -106,6 +106,27 @@ class TestAPI(object):
 
     def test_generate_schedules(self):
         queries = [
+            {
+                "q": {  # Fall 2015 ECE 304, a nuisance that won't schedule
+                        "institution": "ualberta",
+                        "term": "1530",
+                        "courses": ["105005"] # ECE 304
+                }
+            },
+            {
+                "q": {  # Fall 2015 MEC E 460, a nuisance that won't schedule
+                        "institution": "ualberta",
+                        "term": "1530",
+                        "courses": ["094556"] # MEC E 460
+                }
+            },
+            {
+                "q": {  # Fall 2015 EN PH 131, a nuisance that won't schedule
+                        "institution": "ualberta",
+                        "term": "1530",
+                        "courses": ["004051"] # EN PH 131
+                }
+            },
             {
                 "q": {  # Random courses
                         "institution": "ualberta",
@@ -179,11 +200,12 @@ class TestAPI(object):
                                 "endTime": "10:00 PM"
                             }
                         ]
-                }
+                },
+                "zero_expected": True
             },
             {
                 "q": {  # 1st year engineering Fall Term 2014
-                        # With the elective (6th course, complemenetary elec)
+                        # With the elective (6th course, complementary elec)
                         "institution": "ualberta",
                         "term": "1490",
                         "courses": ["001343", # Chem 103
@@ -254,7 +276,7 @@ class TestAPI(object):
             }
         ]
         for query in queries:
-            response = self.get('/api/generate-schedules', query)
+            response = self.get('/api/v1/generate-schedules', query)
             assert_valid_response(response)
             schedules = response.get('objects')
             yield assert_valid_schedules, schedules, query
@@ -266,6 +288,10 @@ def assert_valid_response(response):
     assert response.get('total_pages') is not None
 
 def assert_valid_schedules(schedules, query):
+    if 'zero_expected' in query and query['zero_expected'] == True:
+        assert len(schedules) == 0
+    else:
+        assert len(schedules) > 0
     for schedule in schedules:
         assert 'sections' in schedule
         sections = schedule.get('sections')
