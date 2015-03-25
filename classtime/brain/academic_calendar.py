@@ -203,6 +203,7 @@ class AcademicCalendar(object):
         section_query = self._local_db.query(datatype='sections') \
                                       .filter_by(term=self._term, course=course)
         components = list()
+        section_code_to_section = dict()
         for component in ['LEC', 'LAB', 'SEM', 'LBL']:
             section_models = section_query \
                 .filter_by(component=component) \
@@ -218,7 +219,17 @@ class AcademicCalendar(object):
                         for section_model in section_models]
             sections = [_attach_course_info(section, course_info)
                         for section in sections]
+            section_code_to_section.update({
+                section['section']: section
+                for section in sections
+            })
             components.append(sections)
+
+        for component in components:
+            for section in component:
+                if 'autoEnroll' in section and section['autoEnroll'] is not None:
+                    section['autoEnrollComponent'] = section_code_to_section[section['autoEnroll']]['component']
+
         return components
 
     def _fetch(self, datatype, **kwargs):

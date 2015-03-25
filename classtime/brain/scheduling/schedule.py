@@ -176,6 +176,9 @@ class Schedule(object):
             if section.get('autoEnroll') is None \
             and other.get('autoEnroll') is None:
                 continue
+            if section.get('component') != other.get('autoEnrollComponent') \
+            and section.get('autoEnrollComponent') != other.get('component'):
+                continue
             if section.get('autoEnroll') == other.get('section') \
             or section.get('section') == other.get('autoEnroll'):
                 continue

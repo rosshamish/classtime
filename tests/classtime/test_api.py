@@ -107,21 +107,21 @@ class TestAPI(object):
     def test_generate_schedules(self):
         queries = [
             {
-                "q": {  # Fall 2015 ECE 304, a nuisance that won't schedule
+                "q": {  # Fall 2015 ECE 304, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98
                         "institution": "ualberta",
                         "term": "1530",
                         "courses": ["105005"] # ECE 304
                 }
             },
             {
-                "q": {  # Fall 2015 MEC E 460, a nuisance that won't schedule
+                "q": {  # Fall 2015 MEC E 460, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98
                         "institution": "ualberta",
                         "term": "1530",
                         "courses": ["094556"] # MEC E 460
                 }
             },
             {
-                "q": {  # Fall 2015 EN PH 131, a nuisance that won't schedule
+                "q": {  # Fall 2015 EN PH 131, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98v
                         "institution": "ualberta",
                         "term": "1530",
                         "courses": ["004051"] # EN PH 131
