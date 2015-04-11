@@ -30,7 +30,7 @@ Run the tests with the profiler attached ::
 
 Start cprofilev ::
 
- $ cprofilev stats.dat
+ $ cprofilev --file stats.dat
 
 View and `analyze <http://ymichael.com/2014/03/08/profiling-python-with-cprofile.html>`__ ::
 
