@@ -1,5 +1,7 @@
-
+import collections
 import multiprocessing
+import pycosat
+import itertools
 
 from classtime.logging import logging
 logging = logging.getLogger(__name__) # pylint: disable=C0103
@@ -43,7 +45,7 @@ def find_schedules(schedule_params, num_requested):
             logging.warning('"courses" not found for electives. q={}'.format(
                 schedule_params))
 
-    schedules = _generate_schedules(cal,
+    schedules = _generate_schedules_sat(cal,
         term, course_ids, busy_times, electives_groups, preferences)
     if not schedules:
         logging.error('No schedules found for q={}'.format(
@@ -68,6 +70,79 @@ def find_schedules(schedule_params, num_requested):
                                      for s in schedules]),
             ret_schedules=schedules[:num_requested]))
     return schedules[:num_requested]
+
+
+def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups, preferences):
+    clauses = []
+
+    # Mapping from input domain to SAT domain
+    # - input domain: course sections
+    # - SAT domain: integers
+    components = [c for nested in cal.course_components(term, course_ids)
+                  for c in nested]
+    to_section, to_index = _build_section_index(components)
+
+    # Constraint: Must schedule one of each component
+    component_clauses = collections.defaultdict(list)
+    for s, i in to_index.iteritems():
+        component_clauses[s.get('course') + s.get('component')].append(i)
+    clauses += component_clauses
+
+    # Constraint: Must not schedule conflicting sections together
+    # Note: sections in the same component conflict
+    # Note: recall (A' + B') == (AB)'
+    conflict_clauses = []
+    for conflict in _get_conflicts(components):
+        if conflict[0].get('toString') != conflict[1].get('toString'):
+            conflict_clauses.append([-1 * to_index[conflict[0]],
+                                     -1 * to_index[conflict[1]]])
+        else:
+            conflict_clauses.append([-1 * to_index[conflict[0]]])
+    clauses += conflict_clauses
+
+    # Mapping back to input domain from SAT domain
+    schedules = []
+    for solution in pycosat.itersolve(clauses):
+        sections = [to_section[i] for i in solution
+                    if i > 0]
+        schedules.append(Schedule(sections=sections,
+                                  busy_times=busy_times,
+                                  preferences=preferences))
+    return sorted(schedules,
+                  reverse=True,
+                  key=lambda sched: sched.overall_score())
+
+
+def _build_section_index(components):
+    to_section = []
+    to_index = {}
+    index = 1
+    for i, section in enumerate(components):
+        to_section[index] = section
+        to_index[section.asString()] = index
+        index += 1
+    return to_section, to_index
+
+
+def _get_conflicts(components):
+    conflicts = []
+    for i, a in components:
+        for j, b in components:
+            if j < i:
+                continue
+            if _conflicts(a, b) or i == j:
+                conflicts.append([a,b])
+    return conflicts
+
+
+def _conflicts(section_a, section_b):
+    if section_a.get('course') == section_b.get('course') and \
+       section_a.get('component') == section_b.get('component'):
+        return True
+    if Schedule(sections=[section_a]).conflicts(section_b):
+        return True
+    return False
+
 
 def _generate_schedules(cal, term, course_ids, busy_times, electives_groups, preferences):
     """Generate a finite number of schedules
