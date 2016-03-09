@@ -158,6 +158,7 @@ class Schedule(object):
             return True
         if self._has_dependency_conflict(section):
             return True
+        return False
 
     def _has_timetable_conflict(self, section):
         other = Schedule(section)

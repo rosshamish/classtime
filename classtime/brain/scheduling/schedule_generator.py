@@ -20,6 +20,7 @@ WORKERS = 16
 WORKLOAD_SIZE = CANDIDATE_POOL_SIZE / WORKERS
 """Number of candidate schedules to give to each worker process"""
 
+
 def find_schedules(schedule_params, num_requested):
     """
     :param dict schedule_params: parameters to build the schedule with.
@@ -78,35 +79,35 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
     # Mapping from input domain to SAT domain
     # - input domain: course sections
     # - SAT domain: integers
-    components = [c for nested in cal.course_components(term, course_ids)
-                  for c in nested]
-    to_section, to_index = _build_section_index(components)
+    components = list(itertools.chain.from_iterable(
+                 list(itertools.chain.from_iterable(cal.course_components(term, course_ids)))))
+    from_index, from_string, to_index = _build_section_index(components)
 
     # Constraint: Must schedule one of each component
     component_clauses = collections.defaultdict(list)
-    for s, i in to_index.iteritems():
+    for section_str, i in to_index.iteritems():
+        s = from_string[section_str]
         component_clauses[s.get('course') + s.get('component')].append(i)
-    clauses += component_clauses
+    clauses += [v for k, v in component_clauses.iteritems()]
 
     # Constraint: Must not schedule conflicting sections together
     # Note: sections in the same component conflict
     # Note: recall (A' + B') == (AB)'
     conflict_clauses = []
-    for conflict in _get_conflicts(components):
-        if conflict[0].get('toString') != conflict[1].get('toString'):
-            conflict_clauses.append([-1 * to_index[conflict[0]],
-                                     -1 * to_index[conflict[1]]])
+    for a, b in _get_conflicts(components, busy_times):
+        if a.get('asString') != b.get('asString'):
+            conflict_clauses.append([-1 * to_index[a.get('asString')],
+                                     -1 * to_index[b.get('asString')]])
         else:
-            conflict_clauses.append([-1 * to_index[conflict[0]]])
+            conflict_clauses.append([-1 * to_index[a.get('asString')]])
     clauses += conflict_clauses
 
     # Mapping back to input domain from SAT domain
     schedules = []
     for solution in pycosat.itersolve(clauses):
-        sections = [to_section[i] for i in solution
+        sections = [from_index[i] for i in solution
                     if i > 0]
         schedules.append(Schedule(sections=sections,
-                                  busy_times=busy_times,
                                   preferences=preferences))
     return sorted(schedules,
                   reverse=True,
@@ -114,32 +115,37 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
 
 
 def _build_section_index(components):
-    to_section = []
+    from_index = {}
+    from_string = {}
     to_index = {}
-    index = 1
-    for i, section in enumerate(components):
-        to_section[index] = section
-        to_index[section.asString()] = index
+    for index, section in enumerate(components, 1):
+        from_index[index] = section
+        from_string[section.get('asString')] = section
+        to_index[section.get('asString')] = index
         index += 1
-    return to_section, to_index
+    return from_index, from_string, to_index
 
 
-def _get_conflicts(components):
+def _get_conflicts(components, busy_times):
     conflicts = []
-    for i, a in components:
-        for j, b in components:
-            if j < i:
+    for i, a in enumerate(components, 1):
+        for j, b in enumerate(components, 1):
+            if j <= i:
                 continue
-            if _conflicts(a, b) or i == j:
+            if _conflicts(a, b, busy_times):
                 conflicts.append([a,b])
     return conflicts
 
 
-def _conflicts(section_a, section_b):
+def _conflicts(section_a, section_b, busy_times):
     if section_a.get('course') == section_b.get('course') and \
        section_a.get('component') == section_b.get('component'):
         return True
-    if Schedule(sections=[section_a]).conflicts(section_b):
+    sched = Schedule(busy_times=busy_times)
+    if sched.conflicts(section_a):
+        return True
+    sched.add_section(section_a)
+    if sched.conflicts(section_b):
         return True
     return False
 
