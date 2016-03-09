@@ -76,7 +76,7 @@ def find_schedules(schedule_params, num_requested):
 def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups, preferences):
     clauses = []
 
-    # Mapping from input domain to SAT domain
+    # Map from input domain to SAT domain
     # - input domain: course sections
     # - SAT domain: integers
     electives_course_ids = list(itertools.chain.from_iterable([eg.get('courses') for eg in electives_groups]))
@@ -114,27 +114,34 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
     #         different groups to be scheduled together, using a cartesian
     #         product.
     # Note: recall (A' + B') == (AB)'
-    electives_clauses = collections.defaultdict(list)
-    for egi, ega in electives_groups:
-        cia = ega.get('courses')
-        sa = list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, cia))))
-        for section in sa:
-            index = to_index[section.get('asString')]
-            electives_clauses[section.get('course') + section.get('component')].append(index)
-    clauses += [v for k, v in electives_clauses.iteritems()]
+    if len(electives_groups):
+        electives_clauses = collections.defaultdict(list)
+        for eg in electives_groups:
+            cia = eg.get('courses')
+            sa = list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, cia))))
+            for section in sa:
+                index = to_index[section.get('asString')]
+                electives_clauses[section.get('course') + section.get('component')].append(index)
+        clauses += [v for k, v in electives_clauses.iteritems()]
 
-    electives_group_clauses = []
-    sections_per_group = [
-        list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, eg.get('courses')))))
-        for eg in electives_groups
-    ]
-    cartesian_product = itertools.product(*sections_per_group)
-    for disallowed_combination in cartesian_product:
-        electives_group_clauses.append([-1 * to_index[s.get('asString')]
-                                        for s in disallowed_combination])
-    clauses += electives_group_clauses
+        if len(electives_clauses):
+            import pdb; pdb.set_trace()
 
-    # Mapping back to input domain from SAT domain
+        electives_group_clauses = []
+        sections_per_group = [
+            list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, eg.get('courses')))))
+            for eg in electives_groups
+        ]
+        cartesian_product = itertools.product(*sections_per_group)
+        for disallowed_combination in cartesian_product:
+            electives_group_clauses.append([-1 * to_index[s.get('asString')]
+                                            for s in disallowed_combination])
+        clauses += electives_group_clauses
+
+        if len(electives_clauses):
+            import pdb; pdb.set_trace()
+
+    # Solve the SAT problem and map back to input domain from SAT domain
     schedules = []
     for solution in pycosat.itersolve(clauses):
         sections = [from_index[i] for i in solution
