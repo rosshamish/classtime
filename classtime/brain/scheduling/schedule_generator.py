@@ -79,28 +79,60 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
     # Mapping from input domain to SAT domain
     # - input domain: course sections
     # - SAT domain: integers
-    components = list(itertools.chain.from_iterable(
-                 list(itertools.chain.from_iterable(cal.course_components(term, course_ids)))))
-    from_index, from_string, to_index = _build_section_index(components)
+    electives_course_ids = list(itertools.chain.from_iterable([eg.get('courses') for eg in electives_groups]))
+    all_course_ids = course_ids + electives_course_ids
+    core_sections = list(itertools.chain.from_iterable(
+                    list(itertools.chain.from_iterable(cal.course_components(term, course_ids)))))
+    all_sections = list(itertools.chain.from_iterable(
+                   list(itertools.chain.from_iterable(cal.course_components(term, all_course_ids)))))
+    from_index, from_string, to_index = _build_section_index(all_sections)
 
-    # Constraint: Must schedule one of each component
-    component_clauses = collections.defaultdict(list)
-    for section_str, i in to_index.iteritems():
-        s = from_string[section_str]
-        component_clauses[s.get('course') + s.get('component')].append(i)
-    clauses += [v for k, v in component_clauses.iteritems()]
+    # Constraint: Must schedule one section for each core component
+    core_clauses = collections.defaultdict(list)
+    for core_section in core_sections:
+        index = to_index[core_section.get('asString')]
+        core_clauses[core_section.get('course') + core_section.get('component')].append(index)
+    clauses += [v for k, v in core_clauses.iteritems()]
 
     # Constraint: Must not schedule conflicting sections together
     # Note: sections in the same component conflict
     # Note: recall (A' + B') == (AB)'
     conflict_clauses = []
-    for a, b in _get_conflicts(components, busy_times):
+    for a, b in _get_conflicts(all_sections, busy_times):
         if a.get('asString') != b.get('asString'):
             conflict_clauses.append([-1 * to_index[a.get('asString')],
                                      -1 * to_index[b.get('asString')]])
         else:
             conflict_clauses.append([-1 * to_index[a.get('asString')]])
     clauses += conflict_clauses
+
+    # Constraint: Must schedule one course per electives group
+    # Note: must schedule one section in each component (for all groups)
+    #       - this will be implemented the same way as for core courses
+    # Note: sections in different groups may not be scheduled together
+    #       - this will be implemented by disallowing sections from
+    #         different groups to be scheduled together, using a cartesian
+    #         product.
+    # Note: recall (A' + B') == (AB)'
+    electives_clauses = collections.defaultdict(list)
+    for egi, ega in electives_groups:
+        cia = ega.get('courses')
+        sa = list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, cia))))
+        for section in sa:
+            index = to_index[section.get('asString')]
+            electives_clauses[section.get('course') + section.get('component')].append(index)
+    clauses += [v for k, v in electives_clauses.iteritems()]
+
+    electives_group_clauses = []
+    sections_per_group = [
+        list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, eg.get('courses')))))
+        for eg in electives_groups
+    ]
+    cartesian_product = itertools.product(*sections_per_group)
+    for disallowed_combination in cartesian_product:
+        electives_group_clauses.append([-1 * to_index[s.get('asString')]
+                                        for s in disallowed_combination])
+    clauses += electives_group_clauses
 
     # Mapping back to input domain from SAT domain
     schedules = []
