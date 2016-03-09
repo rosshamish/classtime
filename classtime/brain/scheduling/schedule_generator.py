@@ -109,6 +109,8 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
                     if i > 0]
         schedules.append(Schedule(sections=sections,
                                   preferences=preferences))
+        if len(schedules) > 100:
+            break
     return sorted(schedules,
                   reverse=True,
                   key=lambda sched: sched.overall_score())
