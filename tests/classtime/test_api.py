@@ -106,65 +106,65 @@ class TestAPI(object):
 
     def test_generate_schedules(self):
         queries = [
-            # {
-            #     "q": {  # Fall 2015 ECE 304, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98
-            #             "institution": "ualberta",
-            #             "term": "1530",
-            #             "courses": ["105005"] # ECE 304
-            #     }
-            # },
-            # {
-            #     "q": {  # Fall 2015 MEC E 460, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98
-            #             "institution": "ualberta",
-            #             "term": "1530",
-            #             "courses": ["094556"] # MEC E 460
-            #     }
-            # },
-            # {
-            #     "q": {  # Fall 2015 EN PH 131, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98v
-            #             "institution": "ualberta",
-            #             "term": "1530",
-            #             "courses": ["004051"] # EN PH 131
-            #     }
-            # },
-            # {
-            #     "q": {  # Random courses
-            #             "institution": "ualberta",
-            #             "term": "1490",
-            #             "courses": ["001343",
-            #                         "009019"],
-            #             "busy-times": [{
-            #                 "day": "MWF",
-            #                 "startTime": "04:00 PM",
-            #                 "endTime": "06:00 PM"
-            #                 }
-            #             ]
-            #     }
-            # },
-            # {
-            #     "q": {  # 1st year engineering 2014 Fall Term
-            #             "institution": "ualberta",
-            #             "term": "1490",
-            #             "courses": ["001343",
-            #                         "004093",
-            #                         "004096",
-            #                         "006768",
-            #                         "009019"],
-            #             "busy-times": []
-            #     }
-            # },
-            # {
-            #     "q": {  # 3rd year CompE 2014 Fall Term
-            #             "institution": "ualberta",
-            #             "term": "1490",
-            #             "courses": ["010344",
-            #                         "105014",
-            #                         "105006",
-            #                         "105471",
-            #                         "006708",
-            #                         "010812"]
-            #     }
-            # },
+            {
+                "q": {  # Fall 2015 ECE 304, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98
+                        "institution": "ualberta",
+                        "term": "1530",
+                        "courses": ["105005"] # ECE 304
+                }
+            },
+            {
+                "q": {  # Fall 2015 MEC E 460, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98
+                        "institution": "ualberta",
+                        "term": "1530",
+                        "courses": ["094556"] # MEC E 460
+                }
+            },
+            {
+                "q": {  # Fall 2015 EN PH 131, has 3 components and has a dependency, github.com/rosshamish/classtime/issues/98v
+                        "institution": "ualberta",
+                        "term": "1530",
+                        "courses": ["004051"] # EN PH 131
+                }
+            },
+            {
+                "q": {  # Random courses
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": ["001343",
+                                    "009019"],
+                        "busy-times": [{
+                            "day": "MWF",
+                            "startTime": "04:00 PM",
+                            "endTime": "06:00 PM"
+                            }
+                        ]
+                }
+            },
+            {
+                "q": {  # 1st year engineering 2014 Fall Term
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": ["001343",
+                                    "004093",
+                                    "004096",
+                                    "006768",
+                                    "009019"],
+                        "busy-times": []
+                }
+            },
+            {
+                "q": {  # 3rd year CompE 2014 Fall Term
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": ["010344",
+                                    "105014",
+                                    "105006",
+                                    "105471",
+                                    "006708",
+                                    "010812"]
+                }
+            },
             {
                 "q": {  # 2nd year MecE Fall Term 2014
                         "institution": "ualberta",
@@ -196,102 +196,102 @@ class TestAPI(object):
                         ]
                         }
             },
-            # {
-            #     "q": {  # 1st year engineering Fall Term 2014
-            #             # With tons of busy time
-            #             "institution": "ualberta",
-            #             "term": "1490",
-            #             "courses": ["001343",
-            #                         "004093",
-            #                         "004096",
-            #                         "006768",
-            #                         "009019"],
-            #             "busy-times": [
-            #                 {
-            #                     "day": "MWF",
-            #                     "startTime": "07:00 AM",
-            #                     "endTime": "09:50 AM"
-            #                 },
-            #                 {
-            #                     "day": "TR",
-            #                     "startTime": "04:00 PM",
-            #                     "endTime": "10:00 PM"
-            #                 }
-            #             ]
-            #     },
-            #     "zero_expected": True
-            # },
-            # {
-            #     "q": {  # 1st year engineering Fall Term 2014
-            #             # With the elective (6th course, complementary elec)
-            #             "institution": "ualberta",
-            #             "term": "1490",
-            #             "courses": ["001343", # Chem 103
-            #                         "004093",
-            #                         "004096",
-            #                         "006768",
-            #                         "009019"],
-            #             "electives": [
-            #                 {
-            #                     "courses": ["000268", # Anthr 101
-            #                                 "000269", # Anthr 110
-            #                                 "000270", # Anthr 150
-            #                                 ]
-            #                 }
-            #             ]
-            #     }
-            # },
-            # {
-            #     "q": {  # 1st year engineering Fall Term 2014
-            #             # preferences => start late, marathon class blocks
-            #             "institution": "ualberta",
-            #             "term": "1490",
-            #             "courses": ["001343", # Chem 103
-            #                         "004093",
-            #                         "004096",
-            #                         "006768",
-            #                         "009019"],
-            #             "electives": [
-            #                 {
-            #                     "courses": ["000268", # Anthr 101
-            #                                 "000269", # Anthr 110
-            #                                 "000270", # Anthr 150
-            #                                 ]
-            #                 }
-            #             ],
-            #             "preferences": {
-            #                 "start-early": -10,
-            #                 "no-marathons": -10
-            #             }
-            #     }
-            # },
-            # {
-            #     "q": {  # 1st year engineering Fall Term 2014
-            #             # get realtime open/closed & active/cancelled status
-            #             # obey open/closed & active/cancelled status
-            #             "institution": "ualberta",
-            #             "term": "1490",
-            #             "courses": ["001343", # Chem 103
-            #                         "004093",
-            #                         "004096",
-            #                         "006768",
-            #                         "009019"],
-            #             "electives": [
-            #                 {
-            #                     "courses": ["000268", # Anthr 101
-            #                                 "000269", # Anthr 110
-            #                                 "000270", # Anthr 150
-            #                                 ]
-            #                 }
-            #             ],
-            #             "preferences": {
-            #                 "start-early": -10,
-            #                 "no-marathons": -10,
-            #                 "current-status": True, # 'true' in javascript
-            #                 "obey-status": True # 'true' in javascript
-            #             }
-            #     }
-            # }
+            {
+                "q": {  # 1st year engineering Fall Term 2014
+                        # With tons of busy time
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": ["001343",
+                                    "004093",
+                                    "004096",
+                                    "006768",
+                                    "009019"],
+                        "busy-times": [
+                            {
+                                "day": "MWF",
+                                "startTime": "07:00 AM",
+                                "endTime": "09:50 AM"
+                            },
+                            {
+                                "day": "TR",
+                                "startTime": "04:00 PM",
+                                "endTime": "10:00 PM"
+                            }
+                        ]
+                },
+                "zero_expected": True
+            },
+            {
+                "q": {  # 1st year engineering Fall Term 2014
+                        # With the elective (6th course, complementary elec)
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": ["001343", # Chem 103
+                                    "004093",
+                                    "004096",
+                                    "006768",
+                                    "009019"],
+                        "electives": [
+                            {
+                                "courses": ["000268", # Anthr 101
+                                            "000269", # Anthr 110
+                                            "000270", # Anthr 150
+                                            ]
+                            }
+                        ]
+                }
+            },
+            {
+                "q": {  # 1st year engineering Fall Term 2014
+                        # preferences => start late, marathon class blocks
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": ["001343", # Chem 103
+                                    "004093",
+                                    "004096",
+                                    "006768",
+                                    "009019"],
+                        "electives": [
+                            {
+                                "courses": ["000268", # Anthr 101
+                                            "000269", # Anthr 110
+                                            "000270", # Anthr 150
+                                            ]
+                            }
+                        ],
+                        "preferences": {
+                            "start-early": -10,
+                            "no-marathons": -10
+                        }
+                }
+            },
+            {
+                "q": {  # 1st year engineering Fall Term 2014
+                        # get realtime open/closed & active/cancelled status
+                        # obey open/closed & active/cancelled status
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": ["001343", # Chem 103
+                                    "004093",
+                                    "004096",
+                                    "006768",
+                                    "009019"],
+                        "electives": [
+                            {
+                                "courses": ["000268", # Anthr 101
+                                            "000269", # Anthr 110
+                                            "000270", # Anthr 150
+                                            ]
+                            }
+                        ],
+                        "preferences": {
+                            "start-early": -10,
+                            "no-marathons": -10,
+                            "current-status": True, # 'true' in javascript
+                            "obey-status": True # 'true' in javascript
+                        }
+                }
+            }
         ]
         for query in queries:
             response = self.get('/api/v1/generate-schedules', query)
