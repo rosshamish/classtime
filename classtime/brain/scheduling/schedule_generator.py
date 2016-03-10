@@ -106,39 +106,37 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
             conflict_clauses.append([-1 * to_index[a.get('asString')]])
     clauses += conflict_clauses
 
-    # Constraint: Must schedule one course per electives group
-    # Note: must schedule one section in each component (for all groups)
-    #       - this will be implemented the same way as for core courses
-    # Note: sections in different groups may not be scheduled together
-    #       - this will be implemented by disallowing sections from
-    #         different groups to be scheduled together, using a cartesian
-    #         product.
-    # Note: recall (A' + B') == (AB)'
+    # Electives
     if len(electives_groups):
-        electives_component_clauses = collections.defaultdict(list)
-        for eg in electives_groups:
-            cia = eg.get('courses')
-            sa = list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, cia))))
-            for section in sa:
-                index = to_index[section.get('asString')]
-                electives_component_clauses[section.get('course') + section.get('component')].append(index)
-        logging.info('electives component clauses: {}'.format(electives_component_clauses))
-        clauses += [v for k, v in electives_component_clauses.iteritems()]
+        course_components_by_group = [
+            cal.course_components(term, eg.get('courses'))
+            for eg in electives_groups
+        ]
+        logging.info('components by group: {}'.format(course_components_by_group))
+        sections_by_group = [
+            list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, eg.get('courses')))))
+            for eg in electives_groups
+        ]
+        # Constraint: Must schedule a section in each component (subject to further constraints)
+        electives_clauses = collections.defaultdict(list)
+        for elective_section in itertools.chain.from_iterable(sections_by_group):
+            index = to_index[elective_section.get('asString')]
+            electives_clauses[elective_section.get('course') + elective_section.get('component')].append(index)
+        logging.info('electives clauses: {}'.format(electives_clauses))
+        clauses += [v for k, v in electives_clauses.iteritems()]
 
-        if len(electives_groups) > 1:
-            electives_group_clauses = []
-            sections_per_group = [
-                list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, eg.get('courses')))))
-                for eg in electives_groups
-            ]
-            logging.info('sections per group: {}'.format(sections_per_group))
-            cartesian_product = itertools.product(*sections_per_group)
-            logging.info('cartestian product: {}'.format(cartesian_product))
-            for disallowed_combination in cartesian_product:
-                electives_group_clauses.append([-1 * to_index[s.get('asString')]
-                                                for s in disallowed_combination])
-            logging.info('electives group clauses: {}'.format(electives_group_clauses))
-            clauses += electives_group_clauses
+        # Constraint: May not schedule together sections if they are from the same group,
+        #             unless they are from different components of the same course.
+        electives_clauses2 = []
+        for sections_in_this_group in sections_by_group:
+            for a, b in itertools.combinations(sections_in_this_group, 2):
+                if a.get('component') != b.get('component') and a.get('course') == b.get('course'):
+                    continue
+                else:
+                    electives_clauses2.append([-1 * to_index[a.get('asString')],
+                                               -1 * to_index[b.get('asString')]])
+        logging.info('electives clauses 2: {}'.format(electives_clauses2))
+        clauses += electives_clauses2
 
     # Solve the SAT problem and map back to input domain from SAT domain
     schedules = []
