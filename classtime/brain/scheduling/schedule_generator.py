@@ -74,22 +74,34 @@ def find_schedules(schedule_params, num_requested):
 
 
 def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups, preferences):
+    schedules = []
+    core_sections = [section
+                     for course in cal.course_components(term, course_ids)
+                     for component in course
+                     for section in component]
+    elective_group_course_ids = [eg.get('courses') for eg in electives_groups]
+    for elective_course_ids in itertools.product(*elective_group_course_ids):
+        sections = core_sections + [
+            section
+            for course in cal.course_components(term, elective_course_ids)
+            for component in course
+            for section in component
+        ]
+        schedules += (_generate_schedules_sat_from_sections(sections, busy_times, preferences))
+    return schedules
+
+
+def _generate_schedules_sat_from_sections(sections, busy_times, preferences):
     clauses = []
 
     # Map from input domain to SAT domain
     # - input domain: course sections
     # - SAT domain: integers
-    electives_course_ids = list(itertools.chain.from_iterable([eg.get('courses') for eg in electives_groups]))
-    all_course_ids = course_ids + electives_course_ids
-    core_sections = list(itertools.chain.from_iterable(
-                    list(itertools.chain.from_iterable(cal.course_components(term, course_ids)))))
-    all_sections = list(itertools.chain.from_iterable(
-                   list(itertools.chain.from_iterable(cal.course_components(term, all_course_ids)))))
-    from_index, from_string, to_index = _build_section_index(all_sections)
+    from_index, from_string, to_index = _build_section_index(sections)
 
     # Constraint: Must schedule one section for each core component
     core_clauses = collections.defaultdict(list)
-    for core_section in core_sections:
+    for core_section in sections:
         index = to_index[core_section.get('asString')]
         core_clauses[core_section.get('course') + core_section.get('component')].append(index)
     clauses += [v for k, v in core_clauses.iteritems()]
@@ -98,45 +110,13 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
     # Note: sections in the same component conflict
     # Note: recall (A' + B') == (AB)'
     conflict_clauses = []
-    for a, b in _get_conflicts(all_sections, busy_times):
+    for a, b in _get_conflicts(sections, busy_times):
         if a.get('asString') != b.get('asString'):
             conflict_clauses.append([-1 * to_index[a.get('asString')],
                                      -1 * to_index[b.get('asString')]])
         else:
             conflict_clauses.append([-1 * to_index[a.get('asString')]])
     clauses += conflict_clauses
-
-    # Electives
-    if len(electives_groups):
-        course_components_by_group = [
-            cal.course_components(term, eg.get('courses'))
-            for eg in electives_groups
-        ]
-        logging.info('components by group: {}'.format(course_components_by_group))
-        sections_by_group = [
-            list(itertools.chain.from_iterable(itertools.chain.from_iterable(cal.course_components(term, eg.get('courses')))))
-            for eg in electives_groups
-        ]
-        # Constraint: Must schedule a section in each component (subject to further constraints)
-        electives_clauses = collections.defaultdict(list)
-        for elective_section in itertools.chain.from_iterable(sections_by_group):
-            index = to_index[elective_section.get('asString')]
-            electives_clauses[elective_section.get('course') + elective_section.get('component')].append(index)
-        logging.info('electives clauses: {}'.format(electives_clauses))
-        clauses += [v for k, v in electives_clauses.iteritems()]
-
-        # Constraint: May not schedule together sections if they are from the same group,
-        #             unless they are from different components of the same course.
-        electives_clauses2 = []
-        for sections_in_this_group in sections_by_group:
-            for a, b in itertools.combinations(sections_in_this_group, 2):
-                if a.get('component') != b.get('component') and a.get('course') == b.get('course'):
-                    continue
-                else:
-                    electives_clauses2.append([-1 * to_index[a.get('asString')],
-                                               -1 * to_index[b.get('asString')]])
-        logging.info('electives clauses 2: {}'.format(electives_clauses2))
-        clauses += electives_clauses2
 
     # Solve the SAT problem and map back to input domain from SAT domain
     schedules = []
@@ -147,9 +127,10 @@ def _generate_schedules_sat(cal, term, course_ids, busy_times, electives_groups,
                                   preferences=preferences))
         if len(schedules) > 100:
             break
+
     return sorted(schedules,
                   reverse=True,
-                  key=lambda sched: sched.overall_score())
+                  key=lambda s: s.overall_score())
 
 
 def _build_section_index(components):
