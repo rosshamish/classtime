@@ -17,7 +17,7 @@ def delete_db():
 
 def seed_db(args):
     create_db()
-    term = 1490
+    term = '1490'
     if args.term:
         term = args.term
     brain.get_calendar('ualberta').select_active_term(term, force_refresh=True)
