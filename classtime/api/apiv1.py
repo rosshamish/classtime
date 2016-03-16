@@ -135,7 +135,7 @@ api_manager.create_api(Course,
 # Schedule Generation
 # --------------------------------
 
-NUM_SCHEDULES = 10
+NUM_SCHEDULES = 50
 def find_schedules(result=None, search_params=None):
     if result is None:
         result = dict()
