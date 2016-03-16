@@ -247,7 +247,7 @@ class TestAPI(object):
                             }
                         ]
                 }
-            }
+            },
             {
                 "q": {
                         "institution": "ualberta",
@@ -266,7 +266,7 @@ class TestAPI(object):
                             }
                         ]
                 }
-            }
+            },
             {
                 "q": {  # 1st year engineering Fall Term 2014
                         # preferences => start late, marathon class blocks
