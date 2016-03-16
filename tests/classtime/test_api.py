@@ -3,6 +3,9 @@ from __future__ import absolute_import
 
 import json
 
+from classtime.logging import logging
+logging = logging.getLogger(__name__)
+
 from classtime import app
 from classtime.core import db
 
@@ -237,10 +240,33 @@ class TestAPI(object):
                                             "000269", # Anthr 110
                                             "000270", # Anthr 150
                                             ]
+                            },
+                            {
+                                "courses": ["001607", # CIV E 270
+                                           ]
                             }
                         ]
                 }
-            },
+            }
+            {
+                "q": {
+                        "institution": "ualberta",
+                        "term": "1490",
+                        "courses": [],
+                        "electives": [
+                            {
+                                "courses": ["000268", # Anthr 101
+                                            "000269", # Anthr 110
+                                            "000270", # Anthr 150
+                                            ]
+                            },
+                            {
+                                "courses": ["001607", # CIV E 270
+                                           ]
+                            }
+                        ]
+                }
+            }
             {
                 "q": {  # 1st year engineering Fall Term 2014
                         # preferences => start late, marathon class blocks
@@ -313,15 +339,27 @@ def assert_valid_schedules(schedules, query):
     for schedule in schedules:
         assert 'sections' in schedule
         sections = schedule.get('sections')
-        assert len(sections) > 0
-        for section in sections:
-            assert section.get('institution') == query['q']['institution']
-            assert section.get('term') == query['q']['term']
+        assert_valid_sections(sections, query)
+        if 'electives' in query['q']:
+            assert_valid_electives(sections, query)
 
-            assert section.get('asString') is not None
-            elective_courses = [course
-                for elective in query['q'].get('electives', dict())
-                for course in elective.get('courses')]
-            assert section.get('course') in query['q']['courses'] \
-                or section.get('course') in elective_courses
-            assert section.get('component') is not None
+def assert_valid_electives(sections, query):
+    electives_groups = [eg['courses'] for eg in query['q']['electives']]
+    courses = set(section.get('course') for section in sections)
+    for eg_courses in electives_groups:
+        assert len(courses.intersection(set(eg_courses))) == 1
+
+def assert_valid_sections(sections, query):
+    assert len(sections) > 0
+    logging.debug('sections: {}'.format([s.get('asString') for s in sections]))
+    for section in sections:
+        assert section.get('institution') == query['q']['institution']
+        assert section.get('term') == query['q']['term']
+        assert section.get('asString') is not None
+        elective_courses = [course
+            for elective in query['q'].get('electives', dict())
+            for course in elective.get('courses')]
+        assert section.get('course') in query['q']['courses'] \
+            or section.get('course') in elective_courses
+        assert section.get('component') is not None
+
