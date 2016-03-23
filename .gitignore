@@ -1,0 +1,6 @@
+# sphinx (docs) build folder
+_build
+
+*~
+.DS_Store
+*.swp
