@@ -3,40 +3,139 @@
 [![Documentation Status](https://readthedocs.org/projects/classtime/badge/?version=latest)](https://readthedocs.org/projects/classtime/?badge=latest)
 [![Build Status](https://travis-ci.org/rosshamish/classtime.svg)](https://travis-ci.org/rosshamish/classtime)
 
-##### UAlberta course data and schedule generation as a REST API
+##### An API for UAlberta course data and schedule generation
 
 <hr />
 
-classtime is a platform-agnostic data source for building rich applications for [University of Alberta](https://ualberta.ca) students.
+> **Deprecation Notice**: classtime is deprecated as of April 11, 2017. It is no longer actively maintained, and the public API will no longer be available.
 
-It was developed in parallel with [winston](https://github.com/ahoskins/winston), http://heywinston.com, the official frontend.
+Classtime is an HTTP API for course data and schedule generation. It supports the [University of Alberta](https://ualberta.ca). The documentation is available online at http://classtime.rtfd.org.
 
-It is [well documented](#docs), [well tested](#tests), and [actively maintained][issue-activity].
+It can be used to:
 
-There is preliminary support for plugging in other schools, and contributions of that nature are welcome and encouraged. [Open an issue][issue-new] to discuss adding support for your school.
+* browse terms
+* browse courses
+* get details on any course
+* generate schedules, with support for core courses, electives, and preferences
 
-The current version is hosted at `http://classtime.herokuapp.com/api/v1`. Check out the [demo](#demo).
+It was developed in parallel with [winston](https://github.com/ahoskins/winston), http://heywinston.com, the official frontend. 
 
-> Maintainers: [Ross Anderson](https://github.com/rosshamish), [Andrew Hoskins](https://github.com/ahoskins)
+It is [well documented](#docs), [well tested](#tests), and there's half a plugin system written - if you're interested in porting it to your school, get in touch.
 
-Demo
-----
+> Authors: [Ross Anderson](https://github.com/rosshamish), [Andrew Hoskins](https://github.com/ahoskins)
 
-Get terms  
-https://classtime.herokuapp.com/api/v1/terms  
+Examples
+--------
 
-Get courses  
-https://classtime.herokuapp.com/api/v1/courses
+GET /api/v1/terms
+```javascript
+{
+  "objects": [
+    {
+      "endDate": "2007-12-05",
+      "startDate": "2007-09-05",
+      "term": "1210",
+      "termTitle": "Fall Term 2007"
+    },
+    { <term object 2> },
+    ...
+    { <term object N> }
+  ],
+  ...
+}
+```
 
-Get schedules  
-https://classtime.herokuapp.com/api/v1/generate-schedules?q={"institution":"ualberta","courses":["001343","004093"],"term":"1490"}
+GET /api/v1/courses-min
+```javascript
+{
+  objects = [
+    {
+      "faculty": "Faculty of Business",
+      "subjects": [
+        {
+          "subject": "ACCTG",
+          "subjectTitle": "Accounting",
+          "courses": [
+             {
+                "course": "000001",
+                "asString": "ACCTG 300",
+                "courseTitle": "Intermediate Accounting"
+             },
+             { <course object> }
+             ...
+           ]
+         },
+         { <subject object> }
+         ...
+      ]
+    },
+    { <faculty object> }
+    ...
+  ]
+}
+```
+
+GET /api/v1/courses/000001
+```javascript
+{
+  "asString": "ACCTG 300",
+  "career": "UGRD",
+  "catalog": 300,
+  "course": "000001",
+  "courseDescription": "Provides a basic understanding of accounting: how accounting numbers are generated, the meaning of accounting reports, and how to use accounting reports to make decisions. Note: Not open to students registered in the Faculty of Business. Not for credit in the Bachelor of Commerce Program.",
+  "courseTitle": "Introduction to Accounting",
+  "department": "Department of Accounting, Operations and Information Systems",
+  "departmentCode": "AOIS",
+  "faculty": "Faculty of Business",
+  "facultyCode": "BC",
+  "subject": "ACCTG",
+  "subjectTitle": "Accounting",
+  "term": "1490",
+  "units": 3
+}
+```
+
+Generate schedules
+GET /api/v1/generate-schedules?q={"institution":"ualberta","courses":["001343","004093"],"term":"1490"}
+```javascript
+{
+  "objects": [
+    {
+      "sections": [
+        {
+          ...
+          <course attributes>
+          ...
+          "class_": "62293",
+          "component": "LEC",
+          "day": "MWF",
+          "startTime": "10:00 AM",
+          "endTime": "10:50 AM",
+          ...
+          "section": "A02",
+          "campus": "MAIN",
+          "capacity": 0,
+          "instructorUid": "jdavis",
+          "location": "CCIS L2 190"
+        },
+        { <section object 2> },
+        ...
+        { <section object N> }
+      ],
+      "more_like_this": [<schedule-identifier>, <schedule-identifier>, ..]
+    },
+    { <schedule object 2> },
+    ...
+    { <schedule object M> }
+  ],
+  ...
+}
+```
 
 Docs
 ----
 
 Documentation is hosted at [classtime.readthedocs.org](http://classtime.readthedocs.org). The docs can also be [built locally](#building-the-docs).
-
-When documentation is unclear, missing, or incorrect, [add an issue][issue-new] to the [docs work queue][milestones].
 
 #### Build docs locally
 
@@ -66,7 +165,7 @@ Tests
 
 [Nose][nose] is used for testing.
 
-[Travis-ci][travis-ci] is used to test all pushes to master, as well as all pull requests.
+[Travis-ci][travis-ci] is set up to test the master branch, as well as all pull requests.
 
 #### Run tests locally
 
@@ -81,7 +180,7 @@ Testing is discussed in more detail in the [docs](#docs).
 Contributing
 ------------
 
-Use [Github Issues][issue-list] for discussion, questions, and task tracking. Don't worry about assigning labels.
+The project is no longer actively maintained. If you'd like to contribute, get in touch first.
 
 Commit messages loosely follow the [Angular.js commit message style guide][commit-style-guide].  The purpose is to sprinkle about 10 characters of background information into the front of each commit message.
 
